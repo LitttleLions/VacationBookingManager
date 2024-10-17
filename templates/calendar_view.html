@@ -4,25 +4,25 @@
 
 {% block content %}
 <div class="calendar-container">
-    <h2>{{ _('Calendar View') }}</h2>
+    <h2 class="calendar-title">{{ _('Calendar View') }}</h2>
     
     <div class="calendar-navigation">
-        <a href="{{ url_for('calendar_view', date=prev_two_weeks) }}">&lt; {{ _('Previous') }}</a>
-        <input type="date" id="datePicker" value="{{ current_date.strftime('%Y-%m-%d') }}">
-        <a href="{{ url_for('calendar_view', date=next_two_weeks) }}">{{ _('Next') }} &gt;</a>
+        <a href="{{ url_for('calendar_view', date=prev_two_weeks) }}" class="nav-button">&lt; {{ _('Previous') }}</a>
+        <input type="date" id="datePicker" value="{{ current_date.strftime('%Y-%m-%d') }}" class="date-picker">
+        <a href="{{ url_for('calendar_view', date=next_two_weeks) }}" class="nav-button">{{ _('Next') }} &gt;</a>
     </div>
 
     <div class="calendar-weeks">
         {% for week_dates in [week1_dates, week2_dates] %}
         <div class="calendar-week">
-            <table>
+            <table class="calendar-table">
                 <thead>
                     <tr>
-                        <th>{{ _('Apartment') }}</th>
+                        <th class="apartment-header">{{ _('Apartment') }}</th>
                         {% for date in week_dates %}
-                        <th>
-                            <div>{{ date.strftime('%a') }}</div>
-                            <div>{{ date.strftime('%d/%m') }}</div>
+                        <th class="date-header">
+                            <div class="date-day">{{ date.strftime('%a') }}</div>
+                            <div class="date-number">{{ date.strftime('%d/%m') }}</div>
                         </th>
                         {% endfor %}
                     </tr>
@@ -35,7 +35,7 @@
                         <td class="calendar-cell">
                             {% for booking in calendar_data[apartment][date] %}
                             <div class="booking-item {{ booking.color }}" data-booking='{{ booking|tojson|forceescape }}'>
-                                {{ booking.guest_name[:10] }}...
+                                {{ booking.guest_name[:10] }}{% if booking.guest_name|length > 10 %}...{% endif %}
                             </div>
                             {% endfor %}
                         </td>
