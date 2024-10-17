@@ -25,8 +25,13 @@ def booking_list():
         flash(error, 'error')
     
     filter_query = request.args.get('filter', '').lower()
+    bookings = [b for b in bookings if b['type'].lower() != 'cancellation']
+    
     if filter_query:
-        bookings = [b for b in bookings if filter_query in b['guest_name'].lower() or filter_query in b['apartment_name'].lower()]
+        bookings = [b for b in bookings if filter_query in b['guest_name'].lower() 
+                    or filter_query in b['apartment_name'].lower()
+                    or filter_query in b['status'].lower()
+                    or filter_query in b['type'].lower()]
     
     return render_template('booking_list.html', bookings=bookings)
 

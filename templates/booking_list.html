@@ -14,7 +14,7 @@
 {% endwith %}
 
 <form method="GET" action="{{ url_for('booking_list') }}">
-    <input type="text" name="filter" placeholder="{{ _('Filter by guest or apartment name') }}" value="{{ request.args.get('filter', '') }}">
+    <input type="text" name="filter" placeholder="{{ _('Filter by guest, apartment, status, or type') }}" value="{{ request.args.get('filter', '') }}">
     <button type="submit">{{ _('Filter') }}</button>
 </form>
 
