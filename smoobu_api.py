@@ -43,7 +43,9 @@ class SmoobuAPI:
                         'guests': adults + children,
                         'total_price': booking.get('total-amount', 0),
                         'status': booking.get('status', 'Unknown'),
-                        'type': booking.get('type', 'Unknown')
+                        'type': booking.get('type', 'Unknown'),
+                        'phone_number': booking.get('phone', 'N/A'),
+                        'assistance_notes': booking.get('notes', 'N/A')
                     })
                 return bookings, None
             except requests.RequestException as e:

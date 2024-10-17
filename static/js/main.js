@@ -11,9 +11,14 @@ document.addEventListener('DOMContentLoaded', function() {
         const details = document.createElement('div');
         details.className = 'booking-details';
         details.innerHTML = `
+            <p>Apartment: ${item.dataset.apartmentName || 'N/A'}</p>
+            <p>Guest: ${item.dataset.guestName || 'N/A'}</p>
+            <p>Phone: ${item.dataset.phoneNumber || 'N/A'}</p>
             <p>Check-in: ${item.dataset.checkIn || 'N/A'}</p>
             <p>Check-out: ${item.dataset.checkOut || 'N/A'}</p>
             <p>Guests: ${item.dataset.guests || 'N/A'}</p>
+            <p>Assistance Notes: ${item.dataset.assistanceNotes || 'N/A'}</p>
+            <p>Booking Date: ${item.dataset.bookingDate || 'N/A'}</p>
             <p>Total Price: ${item.dataset.totalPrice || 'N/A'}</p>
             <p>Status: ${item.dataset.status || 'N/A'}</p>
             <p>Type: ${item.dataset.type || 'N/A'}</p>

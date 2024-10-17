@@ -24,29 +24,25 @@
     <table id="bookingTable">
         <thead>
             <tr>
-                <th>{{ _('Guest Name') }}</th>
-                <th>{{ _('Booking Date') }}</th>
                 <th>{{ _('Apartment Name') }}</th>
+                <th>{{ _('Guest Name') }}</th>
+                <th>{{ _('Phone Number') }}</th>
                 <th>{{ _('Check-in') }}</th>
                 <th>{{ _('Check-out') }}</th>
                 <th>{{ _('Guests') }}</th>
-                <th>{{ _('Total Price') }}</th>
-                <th>{{ _('Status') }}</th>
-                <th>{{ _('Type') }}</th>
+                <th>{{ _('Assistance Notes') }}</th>
             </tr>
         </thead>
         <tbody>
             {% for booking in bookings %}
-            <tr class="booking-item" id="booking-{{ loop.index }}" data-guest-name="{{ booking.guest_name }}" data-booking-date="{{ booking.booking_date }}" data-apartment-name="{{ booking.apartment_name }}" data-check-in="{{ booking.check_in }}" data-check-out="{{ booking.check_out }}" data-guests="{{ booking.guests }}" data-total-price="{{ booking.total_price }}" data-status="{{ booking.status }}" data-type="{{ booking.type }}">
-                <td>{{ booking.guest_name }}</td>
-                <td>{{ booking.booking_date }}</td>
+            <tr class="booking-item" data-apartment-name="{{ booking.apartment_name }}" data-guest-name="{{ booking.guest_name }}" data-phone-number="{{ booking.phone_number }}" data-check-in="{{ booking.check_in }}" data-check-out="{{ booking.check_out }}" data-guests="{{ booking.guests }}" data-assistance-notes="{{ booking.assistance_notes }}" data-booking-date="{{ booking.booking_date }}" data-total-price="{{ booking.total_price }}" data-status="{{ booking.status }}" data-type="{{ booking.type }}">
                 <td>{{ booking.apartment_name }}</td>
+                <td>{{ booking.guest_name }}</td>
+                <td>{{ booking.phone_number }}</td>
                 <td>{{ booking.check_in }}</td>
                 <td>{{ booking.check_out }}</td>
                 <td>{{ booking.guests }}</td>
-                <td>{{ booking.total_price }}</td>
-                <td>{{ booking.status }}</td>
-                <td>{{ booking.type }}</td>
+                <td>{{ booking.assistance_notes }}</td>
             </tr>
             {% endfor %}
         </tbody>

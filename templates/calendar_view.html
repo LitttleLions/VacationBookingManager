@@ -20,13 +20,8 @@
     <div class="calendar-cell">
         {% for booking in bookings %}
         {% if booking.apartment_id == apartment.id and booking.check_in <= current_date + day and booking.check_out > current_date + day %}
-        <div class="booking-item">
+        <div class="booking-item" data-apartment-name="{{ booking.apartment_name }}" data-guest-name="{{ booking.guest_name }}" data-phone-number="{{ booking.phone_number }}" data-check-in="{{ booking.check_in }}" data-check-out="{{ booking.check_out }}" data-guests="{{ booking.guests }}" data-assistance-notes="{{ booking.assistance_notes }}" data-booking-date="{{ booking.booking_date }}" data-total-price="{{ booking.total_price }}" data-status="{{ booking.status }}" data-type="{{ booking.type }}">
             {{ booking.guest_name }}
-            <div class="booking-details">
-                <p>{{ _('Check-in') }}: {{ booking.check_in }}</p>
-                <p>{{ _('Check-out') }}: {{ booking.check_out }}</p>
-                <p>{{ _('Guests') }}: {{ booking.guests }}</p>
-            </div>
         </div>
         {% endif %}
         {% endfor %}
