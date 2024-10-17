@@ -58,8 +58,59 @@ def booking_list():
 
 @app.route('/calendar')
 def calendar_view():
-    # ... (calendar view implementation)
-    pass
+    logger.debug("Entering calendar_view function")
+    bookings, error = smoobu_api.get_bookings()
+    if error:
+        logger.error(f"Error fetching bookings for calendar view: {error}")
+        flash(error, 'error')
+        bookings = []
+    else:
+        logger.debug(f"Retrieved {len(bookings)} bookings for calendar view")
+
+    guest_filter = request.args.get('guest_filter', '').lower()
+    apartment_filter = request.args.get('apartment_filter', '').lower()
+    date_filter = request.args.get('date_filter', '')
+
+    current_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
+    week1_start = current_date - timedelta(days=current_date.weekday())
+    week2_start = week1_start + timedelta(weeks=1)
+
+    week1_dates = [week1_start + timedelta(days=i) for i in range(7)]
+    week2_dates = [week2_start + timedelta(days=i) for i in range(7)]
+
+    week1_number = week1_start.isocalendar()[1]
+    week2_number = week2_start.isocalendar()[1]
+
+    apartments = sorted(set(booking['apartment_name'] for booking in bookings))
+
+    calendar_data = {apartment: {date: [] for date in week1_dates + week2_dates} for apartment in apartments}
+
+    for booking in bookings:
+        if (guest_filter in booking['guest_name'].lower() and
+            apartment_filter in booking['apartment_name'].lower() and
+            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out']))):
+            check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d')
+            check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d')
+            for date in week1_dates + week2_dates:
+                if check_in <= date < check_out:
+                    calendar_data[booking['apartment_name']][date].append(booking)
+
+    prev_two_weeks = (current_date - timedelta(weeks=2)).strftime('%Y-%m-%d')
+    next_two_weeks = (current_date + timedelta(weeks=2)).strftime('%Y-%m-%d')
+
+    return render_template('calendar_view.html',
+                           apartments=apartments,
+                           calendar_data=calendar_data,
+                           week1_dates=week1_dates,
+                           week2_dates=week2_dates,
+                           week1_number=week1_number,
+                           week2_number=week2_number,
+                           current_date=current_date,
+                           prev_two_weeks=prev_two_weeks,
+                           next_two_weeks=next_two_weeks,
+                           guest_filter=guest_filter,
+                           apartment_filter=apartment_filter,
+                           date_filter=date_filter)
 
 @app.route('/print')
 def print_view():
