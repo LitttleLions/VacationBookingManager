@@ -24,14 +24,18 @@
             <th>{{ _('Guest Name') }}</th>
             <th>{{ _('Booking Date') }}</th>
             <th>{{ _('Apartment Name') }}</th>
+            <th>{{ _('Status') }}</th>
+            <th>{{ _('Type') }}</th>
         </tr>
     </thead>
     <tbody>
         {% for booking in bookings %}
-        <tr class="booking-item" data-guest-name="{{ booking.guest_name }}" data-booking-date="{{ booking.booking_date }}" data-apartment-name="{{ booking.apartment_name }}" data-check-in="{{ booking.check_in }}" data-check-out="{{ booking.check_out }}" data-guests="{{ booking.guests }}" data-total-price="{{ booking.total_price }}">
+        <tr class="booking-item" data-guest-name="{{ booking.guest_name }}" data-booking-date="{{ booking.booking_date }}" data-apartment-name="{{ booking.apartment_name }}" data-check-in="{{ booking.check_in }}" data-check-out="{{ booking.check_out }}" data-guests="{{ booking.guests }}" data-total-price="{{ booking.total_price }}" data-status="{{ booking.status }}" data-type="{{ booking.type }}">
             <td>{{ booking.guest_name }}</td>
             <td>{{ booking.booking_date }}</td>
             <td>{{ booking.apartment_name }}</td>
+            <td>{{ booking.status }}</td>
+            <td>{{ booking.type }}</td>
         </tr>
         {% endfor %}
     </tbody>

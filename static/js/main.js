@@ -10,10 +10,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 <p>Check-out: ${this.dataset.checkOut}</p>
                 <p>Guests: ${this.dataset.guests}</p>
                 <p>Total Price: ${this.dataset.totalPrice}</p>
+                <p>Status: ${this.dataset.status}</p>
+                <p>Type: ${this.dataset.type}</p>
             `;
             details.style.position = 'absolute';
-            details.style.left = e.pageX + 'px';
-            details.style.top = e.pageY + 'px';
+            details.style.left = (e.pageX + 10) + 'px';
+            details.style.top = (e.pageY + 10) + 'px';
             document.body.appendChild(details);
         });
 

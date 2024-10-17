@@ -56,7 +56,9 @@ class SmoobuAPI:
                     'check_in': booking.get('arrival', ''),
                     'check_out': booking.get('departure', ''),
                     'guests': adults + children,
-                    'total_price': booking.get('total-amount', 0)
+                    'total_price': booking.get('total-amount', 0),
+                    'status': booking.get('status', 'Unknown'),
+                    'type': booking.get('type', 'Unknown')
                 })
             print(f"Debug: Processed bookings: {json.dumps(bookings, indent=2)}")
             return bookings, None
