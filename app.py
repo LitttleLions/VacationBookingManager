@@ -45,7 +45,8 @@ def booking_list():
         logger.debug(f"Processing booking: {booking['guest_name']} - {booking['apartment_name']} - {booking['check_in']} to {booking['check_out']}")
         if (guest_filter in booking['guest_name'].lower() and
             (apartment_filter == '' or apartment_filter == booking['apartment_name'].lower()) and
-            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out']))):
+            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out'])) and
+            booking['guest_name'] != "Unknown Guest"):
             filtered_bookings.append(booking)
             logger.debug(f"Booking added to filtered list")
         else:
@@ -91,7 +92,8 @@ def calendar_view():
     for booking in bookings:
         if (guest_filter in booking['guest_name'].lower() and
             (apartment_filter == '' or apartment_filter == booking['apartment_name'].lower()) and
-            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out']))):
+            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out'])) and
+            booking['guest_name'] != "Unknown Guest"):
             check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d')
             check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d')
             for date in week1_dates + week2_dates:
@@ -136,7 +138,8 @@ def print_view():
     for booking in bookings:
         if (guest_filter in booking['guest_name'].lower() and
             (apartment_filter == '' or apartment_filter == booking['apartment_name'].lower()) and
-            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out']))):
+            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out'])) and
+            booking['guest_name'] != "Unknown Guest"):
             filtered_bookings.append(booking)
 
     logger.debug(f"Filtered bookings for print view: {len(filtered_bookings)} out of {len(bookings)}")
