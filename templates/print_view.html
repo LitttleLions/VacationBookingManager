@@ -3,29 +3,36 @@
 {% block title %}{{ _('Print View') }}{% endblock %}
 
 {% block content %}
-<h2>{{ _('Print View') }}</h2>
-<table>
-    <thead>
-        <tr>
-            <th>{{ _('Guest Name') }}</th>
-            <th>{{ _('Apartment Name') }}</th>
-            <th>{{ _('Check-in') }}</th>
-            <th>{{ _('Check-out') }}</th>
-            <th>{{ _('Guests') }}</th>
-            <th>{{ _('Total Price') }}</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for booking in bookings %}
-        <tr>
-            <td>{{ booking.guest_name }}</td>
-            <td>{{ booking.apartment_name }}</td>
-            <td>{{ booking.check_in }}</td>
-            <td>{{ booking.check_out }}</td>
-            <td>{{ booking.guests }}</td>
-            <td>{{ booking.total_price }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="print-container">
+    <h2>{{ _('Print View - Bookings') }}</h2>
+    
+    {% if bookings %}
+    <table class="print-table">
+        <thead>
+            <tr>
+                <th>{{ _('Guest Name') }}</th>
+                <th>{{ _('Apartment Name') }}</th>
+                <th>{{ _('Check-in') }}</th>
+                <th>{{ _('Check-out') }}</th>
+                <th>{{ _('Guests') }}</th>
+                <th>{{ _('Total Price') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.guest_name }}</td>
+                <td>{{ booking.apartment_name }}</td>
+                <td>{{ booking.check_in }}</td>
+                <td>{{ booking.check_out }}</td>
+                <td>{{ booking.guests }}</td>
+                <td>{{ booking.total_price }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>{{ _('No bookings available.') }}</p>
+    {% endif %}
+</div>
 {% endblock %}

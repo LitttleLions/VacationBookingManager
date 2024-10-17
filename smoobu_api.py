@@ -40,18 +40,32 @@ class SmoobuAPI:
                 for booking in data.get('bookings', []):
                     adults = booking.get('adults', 0) or 0
                     children = booking.get('children', 0) or 0
+                    
+                    # Improved guest name handling
+                    guest_name = (f"{booking.get('firstname', '')} {booking.get('lastname', '')}".strip() or
+                                  booking.get('guest-name', '') or
+                                  "Unknown Guest")
+                    
+                    # Improved total price handling
+                    total_price = booking.get('total-amount') or booking.get('price') or 0
+                    if isinstance(total_price, str):
+                        try:
+                            total_price = float(total_price)
+                        except ValueError:
+                            total_price = 0
+
                     bookings.append({
-                        'guest_name': f"{booking.get('firstname', '')} {booking.get('lastname', '')}".strip() or "Unknown Guest",
+                        'guest_name': guest_name,
                         'booking_date': booking.get('created-at', ''),
                         'apartment_name': booking.get('apartment', {}).get('name', ''),
                         'check_in': booking.get('arrival', ''),
                         'check_out': booking.get('departure', ''),
                         'guests': adults + children,
-                        'total_price': booking.get('total-amount', 0),
+                        'total_price': total_price,
                         'status': booking.get('status', 'Unknown'),
                         'type': booking.get('type', 'Unknown'),
                         'phone_number': booking.get('phone', 'N/A'),
-                        'assistance_notes': booking.get('notes', 'N/A'),
+                        'assistance_notes': booking.get('notice', '') or booking.get('assistant-notice', '') or 'N/A',
                         'language': booking.get('language', 'N/A')
                     })
                 logger.debug(f"Processed {len(bookings)} bookings")

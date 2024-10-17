@@ -63,8 +63,15 @@ def calendar_view():
 
 @app.route('/print')
 def print_view():
-    # ... (print view implementation)
-    pass
+    logger.debug("Entering print_view function")
+    bookings, error = smoobu_api.get_bookings()
+    if error:
+        logger.error(f"Error fetching bookings for print view: {error}")
+        flash(error, 'error')
+        bookings = []
+    else:
+        logger.debug(f"Retrieved {len(bookings)} bookings for print view")
+    return render_template('print_view.html', bookings=bookings)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
