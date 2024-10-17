@@ -3,30 +3,39 @@
 {% block title %}{{ _('Calendar View') }}{% endblock %}
 
 {% block content %}
-<h2>{{ _('Calendar View') }}</h2>
-<div class="calendar">
-    <div class="calendar-header"></div>
-    <div class="calendar-header">{{ _('Monday') }}</div>
-    <div class="calendar-header">{{ _('Tuesday') }}</div>
-    <div class="calendar-header">{{ _('Wednesday') }}</div>
-    <div class="calendar-header">{{ _('Thursday') }}</div>
-    <div class="calendar-header">{{ _('Friday') }}</div>
-    <div class="calendar-header">{{ _('Saturday') }}</div>
-    <div class="calendar-header">{{ _('Sunday') }}</div>
+<h2>{{ _('Calendar View') }} - {{ month|month_name }} {{ year }}</h2>
 
-    {% for apartment in apartments %}
-    <div class="apartment-name">{{ apartment.name }}</div>
-    {% for day in range(7) %}
-    <div class="calendar-cell">
-        {% for booking in bookings %}
-        {% if booking.apartment_id == apartment.id and booking.check_in <= current_date + day and booking.check_out > current_date + day %}
-        <div class="booking-item" data-apartment-name="{{ booking.apartment_name }}" data-guest-name="{{ booking.guest_name }}" data-phone-number="{{ booking.phone_number }}" data-check-in="{{ booking.check_in }}" data-check-out="{{ booking.check_out }}" data-guests="{{ booking.guests }}" data-assistance-notes="{{ booking.assistance_notes }}" data-booking-date="{{ booking.booking_date }}" data-total-price="{{ booking.total_price }}" data-status="{{ booking.status }}" data-type="{{ booking.type }}">
-            {{ booking.guest_name }}
-        </div>
-        {% endif %}
-        {% endfor %}
-    </div>
-    {% endfor %}
-    {% endfor %}
+<div class="calendar-navigation">
+    <a href="{{ url_for('calendar_view', year=prev_month.year, month=prev_month.month) }}">&lt; {{ _('Previous Month') }}</a>
+    <a href="{{ url_for('calendar_view', year=next_month.year, month=next_month.month) }}">{{ _('Next Month') }} &gt;</a>
+</div>
+
+<div class="calendar">
+    <table>
+        <thead>
+            <tr>
+                <th>{{ _('Apartment') }}</th>
+                {% for date in month_dates %}
+                <th>{{ date.strftime('%d') }}<br>{{ date.strftime('%a') }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for apartment in apartments %}
+            <tr>
+                <td>{{ apartment }}</td>
+                {% for date in month_dates %}
+                <td class="calendar-cell">
+                    {% for booking in calendar_data[apartment][date] %}
+                    <div class="booking-item" title="{{ booking.guest_name }} - {{ booking.check_in }} to {{ booking.check_out }}">
+                        {{ booking.guest_name[:10] }}...
+                    </div>
+                    {% endfor %}
+                </td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endblock %}

@@ -71,27 +71,56 @@ th {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
+/* Calendar View Styles */
 .calendar {
-    display: grid;
-    grid-template-columns: auto repeat(7, 1fr);
-    gap: 1px;
-    background-color: #ddd;
+    overflow-x: auto;
 }
 
-.calendar-header, .calendar-cell {
-    background-color: white;
-    padding: 10px;
+.calendar table {
+    border-collapse: separate;
+    border-spacing: 1px;
+}
+
+.calendar th, .calendar td {
+    border: 1px solid #ddd;
+    padding: 5px;
     text-align: center;
+    min-width: 30px;
 }
 
-.calendar-header {
-    font-weight: bold;
-}
-
-.apartment-name {
-    font-weight: bold;
+.calendar th {
     background-color: var(--accent-color);
     color: white;
+}
+
+.calendar-cell {
+    height: 80px;
+    vertical-align: top;
+    padding: 5px;
+}
+
+.calendar .booking-item {
+    background-color: var(--accent-color);
+    color: white;
+    padding: 2px 4px;
+    margin-bottom: 2px;
+    font-size: 0.8em;
+    border-radius: 3px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.calendar-navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.calendar-navigation a {
+    text-decoration: none;
+    color: var(--accent-color);
+    font-weight: bold;
 }
 
 @media print {

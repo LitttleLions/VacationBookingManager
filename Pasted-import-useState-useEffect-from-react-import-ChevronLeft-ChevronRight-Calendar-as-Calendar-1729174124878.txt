@@ -1,0 +1,282 @@
+import { useState, useEffect } from "react"
+import { ChevronLeft, ChevronRight, Calendar as CalendarIcon, List, BookOpen, Search, Filter, Printer, Globe } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import Image from "next/image"
+
+export default function Component() {
+  const [currentDate, setCurrentDate] = useState(new Date())
+  const [monthDates, setMonthDates] = useState<Date[][]>([])
+  const [monthBookings, setMonthBookings] = useState<any[]>([])
+  const [selectedApartment, setSelectedApartment] = useState("all")
+  const [guestNameFilter, setGuestNameFilter] = useState("")
+  const [dateFilter, setDateFilter] = useState("")
+  const [language, setLanguage] = useState<"de" | "en">("de")
+
+  const apartments = [
+    "Whg 01 Muschel",
+    "Whg 02 Meer",
+    "Whg 03 Strand",
+    "Whg 04 Hafen",
+    "Whg 05 Sonne",
+    "Cannes Fiorella"
+  ]
+
+  const getMonthDates = (date: Date) => {
+    const month = []
+    const startDate = new Date(date.getFullYear(), date.getMonth(), date.getDate() - date.getDay() + 1)
+    for (let i = 0; i < 4; i++) {
+      const week = []
+      for (let j = 0; j < 7; j++) {
+        week.push(new Date(startDate.getTime() + (i * 7 + j) * 24 * 60 * 60 * 1000))
+      }
+      month.push(week)
+    }
+    return month
+  }
+
+  const getWeekNumber = (date: Date) => {
+    const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
+    const dayNum = d.getUTCDay() || 7
+    d.setUTCDate(d.getUTCDate() + 4 - dayNum)
+    const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1))
+    return Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7)
+  }
+
+  const navigateMonth = (direction: number) => {
+    const newDate = new Date(currentDate)
+    newDate.setDate(newDate.getDate() + direction * 28)
+    setCurrentDate(newDate)
+  }
+
+  useEffect(() => {
+    const newMonthDates = getMonthDates(currentDate)
+    setMonthDates(newMonthDates)
+
+    // Simulating API call to get bookings for the new month
+    const fetchBookings = () => {
+      // This is a mock function. In a real application, you would fetch data from your API here.
+      const mockBookings = [
+        { id: 1, apartment: "Whg 01 Muschel", guest: "Jörg Trieß", start: newMonthDates[0][0], end: newMonthDates[0][3], color: "bg-orange-500", price: "€500", adults: 2, children: 1, pets: 0 },
+        { id: 2, apartment: "Whg 02 Meer", guest: "Thomas Herrmann", start: newMonthDates[0][1], end: newMonthDates[0][4], color: "bg-blue-500", price: "€600", adults: 2, children: 0, pets: 1 },
+        { id: 3, apartment: "Whg 03 Strand", guest: "Michaele Unfug", start: newMonthDates[0][2], end: newMonthDates[1][6], color: "bg-cyan-500", price: "€750", adults: 3, children: 2, pets: 0 },
+        { id: 4, apartment: "Whg 04 Hafen", guest: "Busse Peter", start: newMonthDates[1][0], end: newMonthDates[1][2], color: "bg-blue-500", price: "€450", adults: 1, children: 0, pets: 0 },
+        { id: 5, apartment: "Whg 05 Sonne", guest: "Dani'El Eder", start: newMonthDates[2][4], end: newMonthDates[3][6], color: "bg-orange-500", price: "€800", adults: 4, children: 1, pets: 1 },
+        { id: 6, apartment: "Cannes Fiorella", guest: "Carol Dell'Amore", start: newMonthDates[3][0], end: newMonthDates[3][6], color: "bg-pink-400", price: "€1000", adults: 2, children: 2, pets: 0 },
+      ]
+      setMonthBookings(mockBookings)
+    }
+
+    fetchBookings()
+  }, [currentDate])
+
+  const filteredBookings = monthBookings.filter(booking => 
+    (selectedApartment === "all" || booking.apartment === selectedApartment) &&
+    booking.guest.toLowerCase().includes(guestNameFilter.toLowerCase()) &&
+    (dateFilter === "" || (booking.start <= new Date(dateFilter) && booking.end >= new Date(dateFilter)))
+  )
+
+  const translations = {
+    de: {
+      bookingList: "Buchungsliste",
+      calendar: "Kalender",
+      bookings: "Buchungen",
+      printList: "Druckliste",
+      selectApartment: "Apartment auswählen",
+      searchByGuest: "Nach Gast suchen",
+      filterByDate: "Nach Datum filtern",
+      apartment: "Apartment",
+      guest: "Gast",
+      checkIn: "Anreise",
+      checkOut: "Abreise",
+      price: "Preis",
+      adults: "Erwachsene",
+      children: "Kinder",
+      pets: "Haustiere"
+    },
+    en: {
+      bookingList: "Booking List",
+      calendar: "Calendar",
+      bookings: "Bookings",
+      printList: "Print List",
+      selectApartment: "Select Apartment",
+      searchByGuest: "Search by guest",
+      filterByDate: "Filter by date",
+      apartment: "Apartment",
+      guest: "Guest",
+      checkIn: "Check-in",
+      checkOut: "Check-out",
+      price: "Price",
+      adults: "Adults",
+      children: "Children",
+      pets: "Pets"
+    }
+  }
+
+  const t = translations[language]
+
+  return (
+    <div className="min-h-screen bg-gray-100 flex font-sans">
+      <aside className="w-64 bg-white border-r p-4 space-y-4">
+        <div className="flex items-center justify-center mb-8">
+          <Image src="https://www.sonnensteg5.de/smoobu/logo-sonnensteg.png" alt="Sonnensteg 5" width={200} height={100} />
+        </div>
+        <Button variant="ghost" className="w-full justify-start">
+          <List className="mr-2 h-4 w-4" />
+          {t.bookingList}
+        </Button>
+        <Button variant="ghost" className="w-full justify-start text-blue-600">
+          <CalendarIcon className="mr-2 h-4 w-4" />
+          {t.calendar}
+        </Button>
+        <Button variant="ghost" className="w-full justify-start">
+          <BookOpen className="mr-2 h-4 w-4" />
+          {t.bookings}
+        </Button>
+        <Button variant="ghost" className="w-full justify-start">
+          <Printer className="mr-2 h-4 w-4" />
+          {t.printList}
+        </Button>
+        <div className="pt-4">
+          <Select value={language} onValueChange={(value: "de" | "en") => setLanguage(value)}>
+            <SelectTrigger>
+              <Globe className="mr-2 h-4 w-4" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="de">Deutsch</SelectItem>
+              <SelectItem value="en">English</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </aside>
+      <main className="flex-1 p-8 overflow-hidden">
+        <div className="bg-white rounded-lg shadow-sm p-6">
+          <div className="flex justify-between items-center mb-6">
+            <div className="flex items-center space-x-4">
+              <h1 className="text-2xl font-semibold">{t.calendar}</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button variant="outline" size="icon" onClick={() => navigateMonth(-1)}>
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <span className="font-semibold">
+                {currentDate.toLocaleString(language, { month: 'long', year: 'numeric' })}
+              </span>
+              <Button variant="outline" size="icon" onClick={() => navigateMonth(1)}>
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="mb-4 flex space-x-4">
+            <Select value={selectedApartment} onValueChange={setSelectedApartment}>
+              <SelectTrigger className="w-[200px]">
+                <SelectValue placeholder={t.selectApartment} />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">{t.selectApartment}</SelectItem>
+                {apartments.map((apt) => (
+                  <SelectItem key={apt} value={apt}>{apt}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="relative">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder={t.searchByGuest}
+                value={guestNameFilter}
+                onChange={(e) => setGuestNameFilter(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+            <div className="relative">
+              <Calendar className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="date"
+                placeholder={t.filterByDate}
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value)}
+                className="pl-8"
+              />
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            {monthDates.map((week, weekIndex) => (
+              <div key={weekIndex} className="mb-8">
+                <table className="w-full border-collapse">
+                  <thead>
+                    <tr className={`text-xs ${weekIndex === 0 ? 'bg-blue-50' : ''}`}>
+                      <th className="p-2 border-r text-left bg-gray-100">{t.apartment}</th>
+                      {week.map((date) => (
+                        <th key={date.toISOString()} className="p-2 border-r text-center w-32">
+                          <div>{date.toLocaleDateString(language, { weekday: 'short' })}</div>
+                          <div>{date.toLocaleDateString(language, { day: '2-digit', month: '2-digit' })}</div>
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {apartments.map((apartment) => (
+                      <tr key={`${weekIndex}-${apartment}`} className="border-t">
+                        <td className="p-2 border-r font-medium bg-gray-50">{apartment}</td>
+                        {week.map((date, dateIndex) => (
+                          <td key={`${weekIndex}-${apartment}-${dateIndex}`} className="p-0 border-r relative h-16">
+                            {filteredBookings
+                              .filter(
+                                (booking) =>
+                                  booking.apartment === apartment &&
+                                  booking.start <= date &&
+                                  booking.end > date
+                              )
+                              .map((booking) => {
+                                const isStart = booking.start.getTime() === date.getTime();
+                                const isEnd = new Date(booking.end.getTime() - 1).toDateString() === date.toDateString();
+                                return (
+                                  <TooltipProvider key={`${booking.id}-${date}`}>
+                                    <Tooltip>
+                                      <TooltipTrigger asChild>
+                                        <div
+                                          className={`absolute inset-1 ${booking.color} text-white text-xs p-1 flex items-center rounded-sm shadow-md`}
+                                          style={{
+                                            left: isStart ? '4px' : '0',
+                                            right: isEnd ? '4px' : '0',
+                                            zIndex: isStart || isEnd ? 10 : 5
+                                          }}
+                                        >
+                                          {isStart && <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500 rounded-l-sm"></div>}
+                                          {isEnd && <div className="absolute right-0 top-0 bottom-0 w-1 bg-red-500 rounded-r-sm"></div>}
+                                          <span className="truncate">{booking.guest}</span>
+                                        </div>
+                                      </TooltipTrigger>
+                                      <TooltipContent side="top" className="bg-white p-2 rounded-lg shadow-lg border border-gray-200">
+                                        <div className="text-sm">
+                                          <p><strong>{t.guest}:</strong> {booking.guest}</p>
+                                          <p><strong>{t.apartment}:</strong> {booking.apartment}</p>
+                                          <p><strong>{t.checkIn}:</strong> {booking.start.toLocaleDateString(language)}</p>
+                                          <p><strong>{t.checkOut}:</strong> {booking.end.toLocaleDateString(language)}</p>
+                                          <p><strong>{t.price}:</strong> {booking.price}</p>
+                                          <p><strong>{t.adults}:</strong>   {booking.adults}</p>
+                                          <p><strong>{t.children}:</strong> {booking.children}</p>
+                                          <p><strong>{t.pets}:</strong> {booking.pets}</p>
+                                        </div>
+                                      </TooltipContent>
+                                    </Tooltip>
+                                  </TooltipProvider>
+                                );
+                              })}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+    </div>
+  )
+}

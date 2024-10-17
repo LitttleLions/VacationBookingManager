@@ -4,6 +4,7 @@ from flask_babel import Babel
 from urllib.parse import urlparse
 from smoobu_api import SmoobuAPI
 from datetime import datetime, timedelta, date
+from calendar import monthrange
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
@@ -18,6 +19,11 @@ def get_locale():
     return request.accept_languages.best_match(['en', 'de'])
 
 babel = Babel(app, locale_selector=get_locale)
+
+# Custom filter for month names
+@app.template_filter('month_name')
+def month_name_filter(month_number):
+    return datetime(2000, month_number, 1).strftime('%B')
 
 @app.route('/')
 def booking_list():
@@ -62,7 +68,46 @@ def calendar_view():
     bookings, error = smoobu_api.get_bookings()
     if error:
         flash(error, 'error')
-    return render_template('calendar_view.html', bookings=bookings)
+
+    # Get the current year and month
+    year = int(request.args.get('year', datetime.now().year))
+    month = int(request.args.get('month', datetime.now().month))
+
+    # Get the first day of the month and the number of days in the month
+    first_day = date(year, month, 1)
+    _, num_days = monthrange(year, month)
+
+    # Create a list of dates for the month
+    month_dates = [date(year, month, day) for day in range(1, num_days + 1)]
+
+    # Get unique apartment names
+    apartments = list(set(booking['apartment_name'] for booking in bookings))
+    apartments.sort()
+
+    # Organize bookings by apartment and date
+    calendar_data = {apartment: {d: [] for d in month_dates} for apartment in apartments}
+    for booking in bookings:
+        check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d').date()
+        check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d').date()
+        apartment = booking['apartment_name']
+        
+        if apartment in apartments:
+            for d in month_dates:
+                if check_in <= d < check_out:
+                    calendar_data[apartment][d].append(booking)
+
+    # Calculate previous and next month
+    prev_month = date(year, month, 1) - timedelta(days=1)
+    next_month = date(year, month, num_days) + timedelta(days=1)
+
+    return render_template('calendar_view.html', 
+                           year=year, 
+                           month=month,
+                           month_dates=month_dates,
+                           apartments=apartments,
+                           calendar_data=calendar_data,
+                           prev_month=prev_month,
+                           next_month=next_month)
 
 @app.route('/print')
 def print_view():
