@@ -3,7 +3,7 @@ from flask import Flask, render_template, request, g, flash
 from flask_babel import Babel
 from urllib.parse import urlparse
 from smoobu_api import SmoobuAPI
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
@@ -30,9 +30,10 @@ def booking_list():
     
     guest_filter = request.args.get('guest_filter', '').lower()
     apartment_filter = request.args.get('apartment_filter', '').lower()
-    date_filter = request.args.get('date_filter', datetime.now().strftime('%Y-%m-%d'))
+    date_filter = request.args.get('date_filter', date.today().strftime('%Y-%m-%d'))
     
     filtered_bookings = []
+    current_date = date.today()
     for booking in bookings:
         if booking['type'].lower() == 'cancellation':
             continue
@@ -43,11 +44,13 @@ def booking_list():
         if apartment_filter and apartment_filter not in booking['apartment_name'].lower():
             continue
         
-        booking_date = datetime.strptime(booking['check_in'], '%Y-%m-%d')
-        if booking_date < datetime.strptime(date_filter, '%Y-%m-%d'):
+        booking_end_date = datetime.strptime(booking['check_out'], '%Y-%m-%d').date()
+        if booking_end_date < current_date:
             continue
         
         filtered_bookings.append(booking)
+    
+    filtered_bookings.sort(key=lambda x: datetime.strptime(x['check_in'], '%Y-%m-%d'))
     
     return render_template('booking_list.html', bookings=filtered_bookings, 
                            guest_filter=guest_filter, 
