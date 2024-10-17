@@ -36,7 +36,7 @@
         </thead>
         <tbody>
             {% for booking in bookings %}
-            <tr class="booking-item" data-apartment-name="{{ booking.apartment_name }}" data-guest-name="{{ booking.guest_name }}" data-check-in="{{ booking.check_in }}" data-check-out="{{ booking.check_out }}" data-phone-number="{{ booking.phone_number }}" data-guests="{{ booking.guests }}" data-assistance-notes="{{ booking.assistance_notes }}" data-language="{{ booking.language }}" data-booking-date="{{ booking.booking_date }}" data-total-price="{{ booking.total_price }}" data-status="{{ booking.status }}" data-type="{{ booking.type }}">
+            <tr class="booking-item" data-booking='{{ booking|tojson|forceescape }}'>
                 <td>{{ booking.apartment_name }}</td>
                 <td>{{ booking.guest_name }}</td>
                 <td>{{ booking.check_in }}</td>
