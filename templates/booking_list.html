@@ -28,16 +28,10 @@
     </thead>
     <tbody>
         {% for booking in bookings %}
-        <tr class="booking-item">
+        <tr class="booking-item" data-guest-name="{{ booking.guest_name }}" data-booking-date="{{ booking.booking_date }}" data-apartment-name="{{ booking.apartment_name }}" data-check-in="{{ booking.check_in }}" data-check-out="{{ booking.check_out }}" data-guests="{{ booking.guests }}" data-total-price="{{ booking.total_price }}">
             <td>{{ booking.guest_name }}</td>
             <td>{{ booking.booking_date }}</td>
             <td>{{ booking.apartment_name }}</td>
-            <div class="booking-details">
-                <p>{{ _('Check-in') }}: {{ booking.check_in }}</p>
-                <p>{{ _('Check-out') }}: {{ booking.check_out }}</p>
-                <p>{{ _('Guests') }}: {{ booking.guests }}</p>
-                <p>{{ _('Total Price') }}: {{ booking.total_price }}</p>
-            </div>
         </tr>
         {% endfor %}
     </tbody>

@@ -50,7 +50,7 @@ class SmoobuAPI:
                 adults = booking.get('adults', 0) or 0
                 children = booking.get('children', 0) or 0
                 bookings.append({
-                    'guest_name': f"{booking.get('firstname', '')} {booking.get('lastname', '')}".strip(),
+                    'guest_name': f"{booking.get('firstname', '')} {booking.get('lastname', '')}".strip() or "Unknown Guest",
                     'booking_date': booking.get('created-at', ''),
                     'apartment_name': booking.get('apartment', {}).get('name', ''),
                     'check_in': booking.get('arrival', ''),
