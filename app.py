@@ -69,45 +69,45 @@ def calendar_view():
     if error:
         flash(error, 'error')
 
-    # Get the current year and month
-    year = int(request.args.get('year', datetime.now().year))
-    month = int(request.args.get('month', datetime.now().month))
+    # Get the current date or the date from the query parameters
+    current_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d').date()
 
-    # Get the first day of the month and the number of days in the month
-    first_day = date(year, month, 1)
-    _, num_days = monthrange(year, month)
+    # Calculate the start of the week (Monday)
+    start_of_week = current_date - timedelta(days=current_date.weekday())
+    
+    # Calculate the end of the week (Sunday)
+    end_of_week = start_of_week + timedelta(days=6)
 
-    # Create a list of dates for the month
-    month_dates = [date(year, month, day) for day in range(1, num_days + 1)]
+    # Create a list of dates for the week
+    week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
 
     # Get unique apartment names
     apartments = list(set(booking['apartment_name'] for booking in bookings))
     apartments.sort()
 
     # Organize bookings by apartment and date
-    calendar_data = {apartment: {d: [] for d in month_dates} for apartment in apartments}
+    calendar_data = {apartment: {d: [] for d in week_dates} for apartment in apartments}
     for booking in bookings:
         check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d').date()
         check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d').date()
         apartment = booking['apartment_name']
         
         if apartment in apartments:
-            for d in month_dates:
-                if check_in <= d < check_out:
+            for d in week_dates:
+                if check_in <= d < check_out and booking['guest_name'] != "Unknown Guest":
                     calendar_data[apartment][d].append(booking)
 
-    # Calculate previous and next month
-    prev_month = date(year, month, 1) - timedelta(days=1)
-    next_month = date(year, month, num_days) + timedelta(days=1)
+    # Calculate previous and next week
+    prev_week = start_of_week - timedelta(days=7)
+    next_week = start_of_week + timedelta(days=7)
 
     return render_template('calendar_view.html', 
-                           year=year, 
-                           month=month,
-                           month_dates=month_dates,
+                           current_date=current_date,
+                           week_dates=week_dates,
                            apartments=apartments,
                            calendar_data=calendar_data,
-                           prev_month=prev_month,
-                           next_month=next_month)
+                           prev_week=prev_week,
+                           next_week=next_week)
 
 @app.route('/print')
 def print_view():

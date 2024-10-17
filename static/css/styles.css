@@ -79,13 +79,14 @@ th {
 .calendar table {
     border-collapse: separate;
     border-spacing: 1px;
+    width: 100%;
 }
 
 .calendar th, .calendar td {
     border: 1px solid #ddd;
     padding: 5px;
     text-align: center;
-    min-width: 30px;
+    min-width: 100px;
 }
 
 .calendar th {
@@ -94,7 +95,7 @@ th {
 }
 
 .calendar-cell {
-    height: 80px;
+    height: 100px;
     vertical-align: top;
     padding: 5px;
 }
@@ -121,6 +122,11 @@ th {
     text-decoration: none;
     color: var(--accent-color);
     font-weight: bold;
+}
+
+/* Add gap between weeks */
+.calendar tbody tr:not(:last-child) {
+    border-bottom: 10px solid transparent;
 }
 
 @media print {

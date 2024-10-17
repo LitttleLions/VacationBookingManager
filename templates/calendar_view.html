@@ -3,11 +3,11 @@
 {% block title %}{{ _('Calendar View') }}{% endblock %}
 
 {% block content %}
-<h2>{{ _('Calendar View') }} - {{ month|month_name }} {{ year }}</h2>
+<h2>{{ _('Calendar View') }} - {{ _('Week of') }} {{ current_date.strftime('%B %d, %Y') }}</h2>
 
 <div class="calendar-navigation">
-    <a href="{{ url_for('calendar_view', year=prev_month.year, month=prev_month.month) }}">&lt; {{ _('Previous Month') }}</a>
-    <a href="{{ url_for('calendar_view', year=next_month.year, month=next_month.month) }}">{{ _('Next Month') }} &gt;</a>
+    <a href="{{ url_for('calendar_view', date=prev_week) }}">&lt; {{ _('Previous Week') }}</a>
+    <a href="{{ url_for('calendar_view', date=next_week) }}">{{ _('Next Week') }} &gt;</a>
 </div>
 
 <div class="calendar">
@@ -15,8 +15,8 @@
         <thead>
             <tr>
                 <th>{{ _('Apartment') }}</th>
-                {% for date in month_dates %}
-                <th>{{ date.strftime('%d') }}<br>{{ date.strftime('%a') }}</th>
+                {% for date in week_dates %}
+                <th>{{ date.strftime('%a') }}<br>{{ date.strftime('%d/%m') }}</th>
                 {% endfor %}
             </tr>
         </thead>
@@ -24,7 +24,7 @@
             {% for apartment in apartments %}
             <tr>
                 <td>{{ apartment }}</td>
-                {% for date in month_dates %}
+                {% for date in week_dates %}
                 <td class="calendar-cell">
                     {% for booking in calendar_data[apartment][date] %}
                     <div class="booking-item" title="{{ booking.guest_name }} - {{ booking.check_in }} to {{ booking.check_out }}">
