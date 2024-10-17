@@ -11,11 +11,12 @@
 </div>
 
 <div class="calendar">
-    <table>
+    {% for week_start in [0, 7] %}
+    <table class="week-table">
         <thead>
             <tr>
                 <th>{{ _('Apartment') }}</th>
-                {% for date in two_week_dates %}
+                {% for date in two_week_dates[week_start:week_start+7] %}
                 <th>{{ date.strftime('%a') }}<br>{{ date.strftime('%d/%m') }}</th>
                 {% endfor %}
             </tr>
@@ -24,10 +25,10 @@
             {% for apartment in apartments %}
             <tr>
                 <td>{{ apartment }}</td>
-                {% for date in two_week_dates %}
+                {% for date in two_week_dates[week_start:week_start+7] %}
                 <td class="calendar-cell">
                     {% for booking in calendar_data[apartment][date] %}
-                    <div class="booking-item" data-booking="{{ booking|tojson }}">
+                    <div class="booking-item" data-booking='{{ booking|tojson|forceescape }}'>
                         {{ booking.guest_name[:10] }}...
                     </div>
                     {% endfor %}
@@ -37,5 +38,6 @@
             {% endfor %}
         </tbody>
     </table>
+    {% endfor %}
 </div>
 {% endblock %}

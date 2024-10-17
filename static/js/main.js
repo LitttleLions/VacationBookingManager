@@ -11,15 +11,15 @@ document.addEventListener('DOMContentLoaded', function() {
         const tooltip = document.createElement('div');
         tooltip.className = 'booking-details';
         tooltip.innerHTML = `
-            <p><strong>Guest:</strong> ${bookingData.guest_name}</p>
-            <p><strong>Apartment:</strong> ${bookingData.apartment_name}</p>
-            <p><strong>Check-in:</strong> ${bookingData.check_in}</p>
-            <p><strong>Check-out:</strong> ${bookingData.check_out}</p>
-            <p><strong>Guests:</strong> ${bookingData.guests}</p>
-            <p><strong>Total Price:</strong> ${bookingData.total_price}</p>
-            <p><strong>Phone:</strong> ${bookingData.phone_number}</p>
-            <p><strong>Language:</strong> ${bookingData.language}</p>
-            <p><strong>Notes:</strong> ${bookingData.assistance_notes}</p>
+            <p><strong>Guest:</strong> ${bookingData.guest_name || 'N/A'}</p>
+            <p><strong>Apartment:</strong> ${bookingData.apartment_name || 'N/A'}</p>
+            <p><strong>Check-in:</strong> ${bookingData.check_in || 'N/A'}</p>
+            <p><strong>Check-out:</strong> ${bookingData.check_out || 'N/A'}</p>
+            <p><strong>Guests:</strong> ${bookingData.guests || 'N/A'}</p>
+            <p><strong>Total Price:</strong> ${bookingData.total_price || 'N/A'}</p>
+            <p><strong>Phone:</strong> ${bookingData.phone_number || 'N/A'}</p>
+            <p><strong>Language:</strong> ${bookingData.language || 'N/A'}</p>
+            <p><strong>Notes:</strong> ${bookingData.assistance_notes || 'N/A'}</p>
         `;
         return tooltip;
     }
@@ -33,16 +33,16 @@ document.addEventListener('DOMContentLoaded', function() {
         let top = y + 10;
 
         if (left + rect.width > viewportWidth) {
-            left = viewportWidth - rect.width - 10;
+            left = x - rect.width - 10;
         }
 
         if (top + rect.height > viewportHeight) {
-            top = viewportHeight - rect.height - 10;
+            top = y - rect.height - 10;
         }
 
         tooltip.style.position = 'fixed';
-        tooltip.style.left = left + 'px';
-        tooltip.style.top = top + 'px';
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
     }
 
     container.addEventListener('mouseover', function(e) {

@@ -9,10 +9,8 @@ from calendar import monthrange
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
 
-# Load configuration
 app.config.from_object('config')
 
-# Initialize Smoobu API
 smoobu_api = SmoobuAPI(app.config['SMOOBU_SETTINGS_CHANNEL_ID'], app.config['SMOOBU_API_KEY'])
 
 def get_locale():
@@ -20,7 +18,6 @@ def get_locale():
 
 babel = Babel(app, locale_selector=get_locale)
 
-# Custom filter for month names
 @app.template_filter('month_name')
 def month_name_filter(month_number):
     return datetime(2000, month_number, 1).strftime('%B')
@@ -69,23 +66,17 @@ def calendar_view():
     if error:
         flash(error, 'error')
 
-    # Get the current date or the date from the query parameters
     current_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d').date()
 
-    # Calculate the start of the current week (Monday)
     start_of_week = current_date - timedelta(days=current_date.weekday())
     
-    # Calculate the end of the next week (Sunday)
     end_of_next_week = start_of_week + timedelta(days=13)
 
-    # Create a list of dates for two weeks
     two_week_dates = [start_of_week + timedelta(days=i) for i in range(14)]
 
-    # Get unique apartment names
     apartments = list(set(booking['apartment_name'] for booking in bookings))
     apartments.sort()
 
-    # Organize bookings by apartment and date
     calendar_data = {apartment: {d: [] for d in two_week_dates} for apartment in apartments}
     for booking in bookings:
         check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d').date()
@@ -97,13 +88,17 @@ def calendar_view():
                 if check_in <= d < check_out and booking['guest_name'] != "Unknown Guest":
                     calendar_data[apartment][d].append(booking)
 
-    # Calculate previous and next two weeks
+    week1_dates = two_week_dates[:7]
+    week2_dates = two_week_dates[7:]
+
     prev_two_weeks = start_of_week - timedelta(days=14)
     next_two_weeks = start_of_week + timedelta(days=14)
 
     return render_template('calendar_view.html', 
                            current_date=current_date,
                            two_week_dates=two_week_dates,
+                           week1_dates=week1_dates,
+                           week2_dates=week2_dates,
                            apartments=apartments,
                            calendar_data=calendar_data,
                            prev_two_weeks=prev_two_weeks,

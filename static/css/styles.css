@@ -71,7 +71,6 @@ th {
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
-/* Calendar View Styles */
 .calendar {
     overflow-x: auto;
 }
@@ -95,17 +94,17 @@ th {
 }
 
 .calendar-cell {
-    height: 60px;
-    vertical-align: top;
+    height: 80px;
+    vertical-align: middle;
     padding: 2px;
 }
 
 .calendar .booking-item {
     background-color: var(--accent-color);
     color: white;
-    padding: 2px 4px;
+    padding: 4px 6px;
     margin-bottom: 2px;
-    font-size: 0.8em;
+    font-size: 0.9em;
     border-radius: 3px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -113,7 +112,7 @@ th {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 20px;
+    height: 24px;
 }
 
 .calendar-navigation {
@@ -128,9 +127,12 @@ th {
     font-weight: bold;
 }
 
-/* Add gap between weeks */
 .calendar tbody tr:nth-child(7n) {
     border-bottom: 10px solid transparent;
+}
+
+.week-table {
+    margin-bottom: 20px;
 }
 
 @media print {
