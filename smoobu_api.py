@@ -45,7 +45,8 @@ class SmoobuAPI:
                         'status': booking.get('status', 'Unknown'),
                         'type': booking.get('type', 'Unknown'),
                         'phone_number': booking.get('phone', 'N/A'),
-                        'assistance_notes': booking.get('notes', 'N/A')
+                        'assistance_notes': booking.get('notes', 'N/A'),
+                        'language': booking.get('language', 'N/A')  # Added language field
                     })
                 return bookings, None
             except requests.RequestException as e:

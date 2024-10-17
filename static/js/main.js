@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <p>Check-out: ${item.dataset.checkOut || 'N/A'}</p>
             <p>Guests: ${item.dataset.guests || 'N/A'}</p>
             <p>Assistance Notes: ${item.dataset.assistanceNotes || 'N/A'}</p>
+            <p>Language: ${item.dataset.language || 'N/A'}</p>
             <p>Booking Date: ${item.dataset.bookingDate || 'N/A'}</p>
             <p>Total Price: ${item.dataset.totalPrice || 'N/A'}</p>
             <p>Status: ${item.dataset.status || 'N/A'}</p>
