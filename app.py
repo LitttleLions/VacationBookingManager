@@ -129,7 +129,7 @@ def print_view():
         logger.debug(f"Retrieved {len(bookings)} bookings for print view")
 
     guest_filter = request.args.get('guest_filter', '').lower()
-    apartment_filter = request.args.get('apartment_filter', '').lower()
+    apartment_filter = request.args.get('apartment_filter', '')
     date_filter = request.args.get('date_filter', '')
 
     apartments = sorted(set(booking['apartment_name'] for booking in bookings))
@@ -137,14 +137,17 @@ def print_view():
     filtered_bookings = []
     for booking in bookings:
         if (guest_filter in booking['guest_name'].lower() and
-            (apartment_filter == '' or apartment_filter == booking['apartment_name'].lower()) and
+            (apartment_filter == '' or apartment_filter == booking['apartment_name']) and
             (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out'])) and
             booking['guest_name'] != "Unknown Guest"):
+            # Include channel name and assistantNotice in the booking dictionary
+            booking['channel_name'] = booking.get('channel', {}).get('name', 'N/A')
+            booking['assistant_notice'] = booking.get('assistance_notes', 'N/A')
             filtered_bookings.append(booking)
 
     logger.debug(f"Filtered bookings for print view: {len(filtered_bookings)} out of {len(bookings)}")
 
-    return render_template('print_view.html', bookings=filtered_bookings,
+    return render_template('print_view_updated.html', bookings=filtered_bookings,
                            guest_filter=guest_filter,
                            apartment_filter=apartment_filter,
                            date_filter=date_filter,
