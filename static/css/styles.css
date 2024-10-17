@@ -1,6 +1,7 @@
 /* General styles */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
     line-height: 1.6;
     margin: 0;
     padding: 0;
@@ -16,7 +17,7 @@ body {
 
 /* Header and Navigation styles */
 header {
-    background-color: #333;
+    background-color: #3498db;
     color: #fff;
     padding: 1rem;
 }
@@ -29,6 +30,7 @@ nav {
 
 nav h1 {
     margin: 0;
+    font-weight: 700;
 }
 
 nav ul {
@@ -45,10 +47,11 @@ nav ul li {
 nav ul li a {
     color: #fff;
     text-decoration: none;
+    font-weight: 100;
 }
 
 nav ul li a:hover {
-    color: #ddd;
+    color: #f39c12;
 }
 
 /* Main list styles */
@@ -65,8 +68,9 @@ nav ul li a:hover {
 }
 
 #bookingTable th {
-    background-color: #f2f2f2;
-    font-weight: bold;
+    background-color: #3498db;
+    color: #fff;
+    font-weight: 700;
 }
 
 #bookingTable tr:nth-child(even) {
@@ -87,19 +91,23 @@ input[type="text"], input[type="date"] {
     margin-right: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
 }
 
 button {
     padding: 8px 15px;
-    background-color: #007bff;
+    background-color: #3498db;
     color: #fff;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 700;
 }
 
 button:hover {
-    background-color: #0056b3;
+    background-color: #2980b9;
 }
 
 /* Calendar styles */
@@ -115,6 +123,7 @@ button:hover {
     font-size: 24px;
     margin-bottom: 20px;
     color: #333;
+    font-weight: 700;
 }
 
 .calendar-navigation {
@@ -125,22 +134,25 @@ button:hover {
 }
 
 .nav-button {
-    background-color: #007bff;
+    background-color: #3498db;
     color: #fff;
     padding: 10px 15px;
     text-decoration: none;
     border-radius: 4px;
     transition: background-color 0.3s;
+    font-weight: 700;
 }
 
 .nav-button:hover {
-    background-color: #0056b3;
+    background-color: #2980b9;
 }
 
 .date-picker {
     padding: 8px;
     border: 1px solid #ddd;
     border-radius: 4px;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 100;
 }
 
 .calendar-weeks {
@@ -157,11 +169,12 @@ button:hover {
 }
 
 .week-number {
-    font-weight: bold;
+    font-weight: 700;
     text-align: center;
     padding: 12px 0;
-    background-color: #f0f0f0;
-    border-bottom: 1px solid #ddd;
+    background-color: #3498db;
+    color: #fff;
+    border-bottom: 1px solid #2980b9;
 }
 
 .calendar-table {
@@ -174,13 +187,13 @@ button:hover {
     background-color: #f8f9fa;
     padding: 10px;
     text-align: center;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .apartment-name {
     background-color: #f8f9fa;
     padding: 10px;
-    font-weight: bold;
+    font-weight: 700;
     text-align: left;
     width: 150px;
 }
@@ -205,20 +218,21 @@ button:hover {
     white-space: nowrap;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
     color: #fff;
+    font-weight: 700;
 }
 
-.booking-item.orange { background-color: #ffa500; }
+.booking-item.orange { background-color: #f39c12; }
 .booking-item.blue { background-color: #3498db; }
-.booking-item.teal { background-color: #20c997; }
+.booking-item.teal { background-color: #1abc9c; }
 
 .date-day {
-    font-weight: normal;
+    font-weight: 100;
     font-size: 0.9em;
     color: #666;
 }
 
 .date-number {
-    font-weight: bold;
+    font-weight: 700;
     font-size: 1.1em;
     color: #333;
 }
@@ -267,7 +281,7 @@ button:hover {
 .booking-details {
     position: absolute;
     background-color: #fff;
-    border: 1px solid #007bff;
+    border: 1px solid #3498db;
     border-radius: 6px;
     padding: 15px;
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
@@ -283,8 +297,8 @@ button:hover {
 }
 
 .booking-details strong {
-    font-weight: bold;
-    color: #007bff;
+    font-weight: 700;
+    color: #3498db;
 }
 
 .booking-details:before {
@@ -294,7 +308,7 @@ button:hover {
     left: 20px;
     border-width: 0 10px 10px;
     border-style: solid;
-    border-color: transparent transparent #007bff;
+    border-color: transparent transparent #3498db;
 }
 
 .booking-details:after {
