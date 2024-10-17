@@ -28,7 +28,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    document.body.addEventListener('mouseout', function(e) {
+    document.addEventListener('mousemove', function(e) {
+        if (currentDetails) {
+            currentDetails.style.left = (e.pageX + 10) + 'px';
+            currentDetails.style.top = (e.pageY + 10) + 'px';
+        }
+    });
+
+    document.addEventListener('mouseout', function(e) {
         if (!e.target.closest('.booking-item') && currentDetails) {
             currentDetails.remove();
             currentDetails = null;
