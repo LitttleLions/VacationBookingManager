@@ -24,8 +24,26 @@ def month_name_filter(month_number):
 
 @app.route('/')
 def booking_list():
-    # ... existing booking_list function ...
-    return render_template('booking_list.html')  # Placeholder return statement
+    bookings, error = smoobu_api.get_bookings()
+    if error:
+        flash(error, 'error')
+        bookings = []
+
+    guest_filter = request.args.get('guest_filter', '')
+    apartment_filter = request.args.get('apartment_filter', '')
+    date_filter = request.args.get('date_filter', '')
+
+    filtered_bookings = []
+    for booking in bookings:
+        if (guest_filter.lower() in booking['guest_name'].lower() and
+            apartment_filter.lower() in booking['apartment_name'].lower() and
+            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out']))):
+            filtered_bookings.append(booking)
+
+    return render_template('booking_list.html', bookings=filtered_bookings,
+                           guest_filter=guest_filter,
+                           apartment_filter=apartment_filter,
+                           date_filter=date_filter)
 
 @app.route('/calendar')
 def calendar_view():
@@ -81,8 +99,11 @@ def calendar_view():
 
 @app.route('/print')
 def print_view():
-    # ... existing print_view function ...
-    return render_template('print_view.html')  # Placeholder return statement
+    bookings, error = smoobu_api.get_bookings()
+    if error:
+        flash(error, 'error')
+        bookings = []
+    return render_template('print_view.html', bookings=bookings)
 
 @app.context_processor
 def inject_debug():
