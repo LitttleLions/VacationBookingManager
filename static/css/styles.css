@@ -17,7 +17,7 @@ body {
 
 /* Header and Navigation styles */
 header {
-    background-color: #3498db;
+    background-color: #f39c12;
     color: #fff;
     padding: 1rem;
 }
@@ -51,7 +51,7 @@ nav ul li a {
 }
 
 nav ul li a:hover {
-    color: #f39c12;
+    color: #e67e22;
 }
 
 /* Calendar styles */
@@ -67,7 +67,7 @@ nav ul li a:hover {
     font-size: 24px;
     font-weight: 700;
     margin-bottom: 20px;
-    color: #3498db;
+    color: #f39c12;
 }
 
 .filter-form {
@@ -86,14 +86,14 @@ nav ul li a:hover {
 }
 
 .filter-form button {
-    background-color: #3498db;
+    background-color: #f39c12;
     color: #fff;
     cursor: pointer;
     transition: background-color 0.3s;
 }
 
 .filter-form button:hover {
-    background-color: #2980b9;
+    background-color: #e67e22;
 }
 
 .calendar-navigation {
@@ -105,7 +105,7 @@ nav ul li a:hover {
 
 .nav-button {
     padding: 8px 12px;
-    background-color: #3498db;
+    background-color: #f39c12;
     color: #fff;
     text-decoration: none;
     border-radius: 4px;
@@ -113,7 +113,7 @@ nav ul li a:hover {
 }
 
 .nav-button:hover {
-    background-color: #2980b9;
+    background-color: #e67e22;
 }
 
 .date-picker {
@@ -131,7 +131,7 @@ nav ul li a:hover {
     font-size: 18px;
     font-weight: 700;
     margin-bottom: 10px;
-    color: #3498db;
+    color: #f39c12;
 }
 
 .calendar-table {
@@ -177,7 +177,7 @@ nav ul li a:hover {
 }
 
 .booking-item {
-    background-color: #e1f5fe;
+    background-color: #fff5e6;
     border-radius: 4px;
     padding: 8px;
     margin-bottom: 5px;

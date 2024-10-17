@@ -12,9 +12,9 @@
         <nav>
             <h1>Vacation Rental Bookings</h1>
             <ul>
-                <li><a href="{{ url_for('booking_list') }}">{{ _('Booking List') }}</a></li>
-                <li><a href="{{ url_for('calendar_view') }}">{{ _('Calendar View') }}</a></li>
-                <li><a href="{{ url_for('print_view') }}">{{ _('Print View') }}</a></li>
+                <li><a href="{{ url_for('booking_list') }}" {% if request.endpoint == 'booking_list' %}style="color: #e67e22;"{% endif %}>{{ _('Booking List') }}</a></li>
+                <li><a href="{{ url_for('calendar_view') }}" {% if request.endpoint == 'calendar_view' %}style="color: #e67e22;"{% endif %}>{{ _('Calendar View') }}</a></li>
+                <li><a href="{{ url_for('print_view') }}" {% if request.endpoint == 'print_view' %}style="color: #e67e22;"{% endif %}>{{ _('Print View') }}</a></li>
                 <li>
                     <select onchange="window.location.href=this.value">
                         <option value="{{ url_for('booking_list', lang='en') }}" {% if request.args.get('lang') == 'en' %}selected{% endif %}>English</option>
