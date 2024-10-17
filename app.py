@@ -1,5 +1,5 @@
 import os
-from flask import Flask, render_template, request, g
+from flask import Flask, render_template, request, g, flash
 from flask_babel import Babel
 from urllib.parse import urlparse
 from smoobu_api import SmoobuAPI
@@ -21,6 +21,13 @@ babel = Babel(app, locale_selector=get_locale)
 @app.route('/')
 def booking_list():
     bookings = smoobu_api.get_bookings()
+    if not bookings:
+        flash('Error fetching bookings. Please try again later.', 'error')
+    
+    filter_query = request.args.get('filter', '').lower()
+    if filter_query:
+        bookings = [b for b in bookings if filter_query in b['guest_name'].lower() or filter_query in b['apartment_name'].lower()]
+    
     return render_template('booking_list.html', bookings=bookings)
 
 @app.route('/calendar')

@@ -19,11 +19,25 @@ class SmoobuAPI:
             'from': datetime.now().strftime('%Y-%m-%d'),
             'to': end_date.strftime('%Y-%m-%d')
         }
-        response = requests.get(f"{self.BASE_URL}/bookings", headers=self.headers, params=params)
-        if response.status_code == 200:
-            return response.json()
-        else:
-            # Handle error
+        try:
+            response = requests.get(f"{self.BASE_URL}/bookings", headers=self.headers, params=params)
+            response.raise_for_status()
+            data = response.json()
+            
+            bookings = []
+            for booking in data.get('bookings', []):
+                bookings.append({
+                    'guest_name': f"{booking.get('firstName', '')} {booking.get('lastName', '')}".strip(),
+                    'booking_date': booking.get('createdAt', ''),
+                    'apartment_name': booking.get('appartment', {}).get('name', ''),
+                    'check_in': booking.get('arrivalDate', ''),
+                    'check_out': booking.get('departureDate', ''),
+                    'guests': booking.get('numGuests', 0),
+                    'total_price': booking.get('totalAmount', 0)
+                })
+            return bookings
+        except requests.RequestException as e:
+            print(f"Error fetching bookings: {str(e)}")
             return []
 
     # Add more API methods as needed

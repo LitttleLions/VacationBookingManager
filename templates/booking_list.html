@@ -4,6 +4,20 @@
 
 {% block content %}
 <h2>{{ _('Booking List') }}</h2>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<form method="GET" action="{{ url_for('booking_list') }}">
+    <input type="text" name="filter" placeholder="{{ _('Filter by guest or apartment name') }}" value="{{ request.args.get('filter', '') }}">
+    <button type="submit">{{ _('Filter') }}</button>
+</form>
+
 <table>
     <thead>
         <tr>
