@@ -34,9 +34,10 @@ def booking_list():
 
     guest_filter = request.args.get('guest_filter', '').lower()
     apartment_filter = request.args.get('apartment_filter', '').lower()
-    date_filter = request.args.get('date_filter', '')
+    start_date_filter = request.args.get('start_date_filter', '')
+    end_date_filter = request.args.get('end_date_filter', '')
 
-    logger.debug(f"Filters applied - Guest: {guest_filter}, Apartment: {apartment_filter}, Date: {date_filter}")
+    logger.debug(f"Filters applied - Guest: {guest_filter}, Apartment: {apartment_filter}, Start Date: {start_date_filter}, End Date: {end_date_filter}")
 
     apartments = sorted(set(booking['apartment_name'] for booking in bookings))
 
@@ -45,7 +46,8 @@ def booking_list():
         logger.debug(f"Processing booking: {booking['guest_name']} - {booking['apartment_name']} - {booking['check_in']} to {booking['check_out']}")
         if (guest_filter in booking['guest_name'].lower() and
             (apartment_filter == '' or apartment_filter == booking['apartment_name'].lower()) and
-            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out'])) and
+            (not start_date_filter or booking['check_out'] >= start_date_filter) and
+            (not end_date_filter or booking['check_in'] <= end_date_filter) and
             booking['guest_name'] != "Unknown Guest"):
             filtered_bookings.append(booking)
             logger.debug(f"Booking added to filtered list")
@@ -57,7 +59,8 @@ def booking_list():
     return render_template('booking_list.html', bookings=filtered_bookings,
                            guest_filter=guest_filter,
                            apartment_filter=apartment_filter,
-                           date_filter=date_filter,
+                           start_date_filter=start_date_filter,
+                           end_date_filter=end_date_filter,
                            apartments=apartments)
 
 @app.route('/calendar')
@@ -73,7 +76,8 @@ def calendar_view():
 
     guest_filter = request.args.get('guest_filter', '').lower()
     apartment_filter = request.args.get('apartment_filter', '').lower()
-    date_filter = request.args.get('date_filter', '')
+    start_date_filter = request.args.get('start_date_filter', '')
+    end_date_filter = request.args.get('end_date_filter', '')
 
     current_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
     week_start = current_date - timedelta(days=current_date.weekday())
@@ -87,7 +91,8 @@ def calendar_view():
     for booking in bookings:
         if (guest_filter in booking['guest_name'].lower() and
             (apartment_filter == '' or apartment_filter == booking['apartment_name'].lower()) and
-            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out'])) and
+            (not start_date_filter or booking['check_out'] >= start_date_filter) and
+            (not end_date_filter or booking['check_in'] <= end_date_filter) and
             booking['guest_name'] != "Unknown Guest"):
             check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d')
             check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d')
@@ -108,7 +113,8 @@ def calendar_view():
                            next_week=next_week,
                            guest_filter=guest_filter,
                            apartment_filter=apartment_filter,
-                           date_filter=date_filter)
+                           start_date_filter=start_date_filter,
+                           end_date_filter=end_date_filter)
 
 @app.route('/print')
 def print_view():
@@ -123,7 +129,8 @@ def print_view():
 
     guest_filter = request.args.get('guest_filter', '').lower()
     apartment_filter = request.args.get('apartment_filter', '')
-    date_filter = request.args.get('date_filter', '')
+    start_date_filter = request.args.get('start_date_filter', '')
+    end_date_filter = request.args.get('end_date_filter', '')
 
     apartments = sorted(set(booking['apartment_name'] for booking in bookings))
 
@@ -131,7 +138,8 @@ def print_view():
     for booking in bookings:
         if (guest_filter in booking['guest_name'].lower() and
             (apartment_filter == '' or apartment_filter == booking['apartment_name']) and
-            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out'])) and
+            (not start_date_filter or booking['check_out'] >= start_date_filter) and
+            (not end_date_filter or booking['check_in'] <= end_date_filter) and
             booking['guest_name'] != "Unknown Guest"):
             booking['channel_name'] = booking.get('channel', {}).get('name', 'N/A')
             booking['assistant_notice'] = booking.get('assistance_notes', 'N/A')
@@ -142,7 +150,8 @@ def print_view():
     return render_template('print_view_updated.html', bookings=filtered_bookings,
                            guest_filter=guest_filter,
                            apartment_filter=apartment_filter,
-                           date_filter=date_filter,
+                           start_date_filter=start_date_filter,
+                           end_date_filter=end_date_filter,
                            apartments=apartments)
 
 if __name__ == '__main__':

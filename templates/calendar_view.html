@@ -14,14 +14,15 @@
             <option value="{{ apartment }}" {% if apartment_filter == apartment %}selected{% endif %}>{{ apartment }}</option>
             {% endfor %}
         </select>
-        <input type="date" name="date_filter" value="{{ date_filter }}">
+        <input type="date" name="start_date_filter" value="{{ start_date_filter }}" placeholder="{{ _('Start Date') }}">
+        <input type="date" name="end_date_filter" value="{{ end_date_filter }}" placeholder="{{ _('End Date') }}">
         <button type="submit">{{ _('Filter') }}</button>
     </form>
 
     <div class="calendar-navigation">
-        <a href="{{ url_for('calendar_view', date=prev_week, guest_filter=guest_filter, apartment_filter=apartment_filter, date_filter=date_filter) }}" class="nav-button">&lt; {{ _('Previous Week') }}</a>
+        <a href="{{ url_for('calendar_view', date=prev_week, guest_filter=guest_filter, apartment_filter=apartment_filter, start_date_filter=start_date_filter, end_date_filter=end_date_filter) }}" class="nav-button">&lt; {{ _('Previous Week') }}</a>
         <input type="date" id="datePicker" value="{{ current_date.strftime('%Y-%m-%d') }}" class="date-picker">
-        <a href="{{ url_for('calendar_view', date=next_week, guest_filter=guest_filter, apartment_filter=apartment_filter, date_filter=date_filter) }}" class="nav-button">{{ _('Next Week') }} &gt;</a>
+        <a href="{{ url_for('calendar_view', date=next_week, guest_filter=guest_filter, apartment_filter=apartment_filter, start_date_filter=start_date_filter, end_date_filter=end_date_filter) }}" class="nav-button">{{ _('Next Week') }} &gt;</a>
     </div>
 
     <div class="calendar-week">
