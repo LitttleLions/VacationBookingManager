@@ -9,9 +9,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function createTooltip(bookingData) {
         const tooltip = document.createElement('div');
-        tooltip.className = 'booking-details';
+        tooltip.className = 'booking-tooltip';
         tooltip.innerHTML = `
-            <p><strong>Guest:</strong> ${bookingData.guest_name || 'N/A'}</p>
+            <h3>${bookingData.guest_name || 'N/A'}</h3>
             <p><strong>Apartment:</strong> ${bookingData.apartment_name || 'N/A'}</p>
             <p><strong>Check-in:</strong> ${bookingData.check_in || 'N/A'}</p>
             <p><strong>Check-out:</strong> ${bookingData.check_out || 'N/A'}</p>
@@ -19,6 +19,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <p><strong>Total Price:</strong> ${bookingData.total_price || 'N/A'}</p>
             <p><strong>Phone:</strong> ${bookingData.phone_number || 'N/A'}</p>
             <p><strong>Language:</strong> ${bookingData.language || 'N/A'}</p>
+            <p><strong>Channel:</strong> ${bookingData.channel_name || 'N/A'}</p>
             <p><strong>Notes:</strong> ${bookingData.assistance_notes || 'N/A'}</p>
         `;
         return tooltip;
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function() {
         tooltip.style.top = `${top}px`;
     }
 
-    container.addEventListener('mouseover', function(e) {
+    function showTooltip(e) {
         const bookingItem = e.target.closest('.booking-item');
         if (bookingItem) {
             if (currentTooltip) {
@@ -61,18 +62,21 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.error('Error creating tooltip:', error);
             }
         }
-    });
+    }
+
+    function hideTooltip(e) {
+        if (!e.target.closest('.booking-item') && currentTooltip) {
+            currentTooltip.remove();
+            currentTooltip = null;
+        }
+    }
+
+    container.addEventListener('mouseover', showTooltip);
+    container.addEventListener('mouseout', hideTooltip);
 
     document.addEventListener('mousemove', function(e) {
         if (currentTooltip) {
             positionTooltip(currentTooltip, e.clientX, e.clientY);
-        }
-    });
-
-    container.addEventListener('mouseout', function(e) {
-        if (!e.target.closest('.booking-item') && currentTooltip) {
-            currentTooltip.remove();
-            currentTooltip = null;
         }
     });
 
