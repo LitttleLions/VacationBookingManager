@@ -38,11 +38,13 @@ def booking_list():
 
     logger.debug(f"Filters applied - Guest: {guest_filter}, Apartment: {apartment_filter}, Date: {date_filter}")
 
+    apartments = sorted(set(booking['apartment_name'] for booking in bookings))
+
     filtered_bookings = []
     for booking in bookings:
         logger.debug(f"Processing booking: {booking['guest_name']} - {booking['apartment_name']} - {booking['check_in']} to {booking['check_out']}")
         if (guest_filter in booking['guest_name'].lower() and
-            apartment_filter in booking['apartment_name'].lower() and
+            (apartment_filter == '' or apartment_filter == booking['apartment_name'].lower()) and
             (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out']))):
             filtered_bookings.append(booking)
             logger.debug(f"Booking added to filtered list")
@@ -54,7 +56,8 @@ def booking_list():
     return render_template('booking_list.html', bookings=filtered_bookings,
                            guest_filter=guest_filter,
                            apartment_filter=apartment_filter,
-                           date_filter=date_filter)
+                           date_filter=date_filter,
+                           apartments=apartments)
 
 @app.route('/calendar')
 def calendar_view():
@@ -87,7 +90,7 @@ def calendar_view():
 
     for booking in bookings:
         if (guest_filter in booking['guest_name'].lower() and
-            apartment_filter in booking['apartment_name'].lower() and
+            (apartment_filter == '' or apartment_filter == booking['apartment_name'].lower()) and
             (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out']))):
             check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d')
             check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d')
@@ -122,7 +125,27 @@ def print_view():
         bookings = []
     else:
         logger.debug(f"Retrieved {len(bookings)} bookings for print view")
-    return render_template('print_view.html', bookings=bookings)
+
+    guest_filter = request.args.get('guest_filter', '').lower()
+    apartment_filter = request.args.get('apartment_filter', '').lower()
+    date_filter = request.args.get('date_filter', '')
+
+    apartments = sorted(set(booking['apartment_name'] for booking in bookings))
+
+    filtered_bookings = []
+    for booking in bookings:
+        if (guest_filter in booking['guest_name'].lower() and
+            (apartment_filter == '' or apartment_filter == booking['apartment_name'].lower()) and
+            (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out']))):
+            filtered_bookings.append(booking)
+
+    logger.debug(f"Filtered bookings for print view: {len(filtered_bookings)} out of {len(bookings)}")
+
+    return render_template('print_view.html', bookings=filtered_bookings,
+                           guest_filter=guest_filter,
+                           apartment_filter=apartment_filter,
+                           date_filter=date_filter,
+                           apartments=apartments)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)

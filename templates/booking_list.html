@@ -16,7 +16,12 @@
 
     <form method="GET" action="{{ url_for('booking_list') }}">
         <input type="text" name="guest_filter" placeholder="{{ _('Filter by guest name') }}" value="{{ guest_filter }}">
-        <input type="text" name="apartment_filter" placeholder="{{ _('Filter by apartment name') }}" value="{{ apartment_filter }}">
+        <select name="apartment_filter">
+            <option value="">{{ _('All Apartments') }}</option>
+            {% for apartment in apartments %}
+            <option value="{{ apartment }}" {% if apartment_filter == apartment %}selected{% endif %}>{{ apartment }}</option>
+            {% endfor %}
+        </select>
         <input type="date" name="date_filter" value="{{ date_filter }}">
         <button type="submit">{{ _('Filter') }}</button>
     </form>
@@ -32,6 +37,7 @@
                 <th>{{ _('Guests') }}</th>
                 <th>{{ _('Assistance Notes') }}</th>
                 <th>{{ _('Language') }}</th>
+                <th>{{ _('Channel Name') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -45,6 +51,7 @@
                 <td>{{ booking.guests }}</td>
                 <td>{{ booking.assistance_notes }}</td>
                 <td>{{ booking.language }}</td>
+                <td>{{ booking.channel_name }}</td>
             </tr>
             {% endfor %}
         </tbody>

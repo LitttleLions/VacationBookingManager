@@ -6,6 +6,18 @@
 <div class="print-container">
     <h2>{{ _('Print View - Bookings') }}</h2>
     
+    <form method="GET" action="{{ url_for('print_view') }}" class="filter-form">
+        <input type="text" name="guest_filter" placeholder="{{ _('Filter by guest name') }}" value="{{ guest_filter }}">
+        <select name="apartment_filter">
+            <option value="">{{ _('All Apartments') }}</option>
+            {% for apartment in apartments %}
+            <option value="{{ apartment }}" {% if apartment_filter == apartment %}selected{% endif %}>{{ apartment }}</option>
+            {% endfor %}
+        </select>
+        <input type="date" name="date_filter" value="{{ date_filter }}">
+        <button type="submit">{{ _('Filter') }}</button>
+    </form>
+
     {% if bookings %}
     <table class="print-table">
         <thead>
@@ -16,6 +28,8 @@
                 <th>{{ _('Check-out') }}</th>
                 <th>{{ _('Guests') }}</th>
                 <th>{{ _('Total Price') }}</th>
+                <th>{{ _('Channel Name') }}</th>
+                <th>{{ _('Assistance Notes') }}</th>
             </tr>
         </thead>
         <tbody>
@@ -27,6 +41,8 @@
                 <td>{{ booking.check_out }}</td>
                 <td>{{ booking.guests }}</td>
                 <td>{{ booking.total_price }}</td>
+                <td>{{ booking.channel_name }}</td>
+                <td>{{ booking.assistance_notes }}</td>
             </tr>
             {% endfor %}
         </tbody>

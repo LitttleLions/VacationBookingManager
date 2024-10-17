@@ -8,7 +8,12 @@
     
     <form method="GET" action="{{ url_for('calendar_view') }}" class="filter-form">
         <input type="text" name="guest_filter" placeholder="{{ _('Filter by guest name') }}" value="{{ guest_filter }}">
-        <input type="text" name="apartment_filter" placeholder="{{ _('Filter by apartment name') }}" value="{{ apartment_filter }}">
+        <select name="apartment_filter">
+            <option value="">{{ _('All Apartments') }}</option>
+            {% for apartment in apartments %}
+            <option value="{{ apartment }}" {% if apartment_filter == apartment %}selected{% endif %}>{{ apartment }}</option>
+            {% endfor %}
+        </select>
         <input type="date" name="date_filter" value="{{ date_filter }}">
         <button type="submit">{{ _('Filter') }}</button>
     </form>
