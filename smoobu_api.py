@@ -2,6 +2,9 @@ import requests
 from datetime import datetime, timedelta
 import json
 import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 class SmoobuAPI:
     BASE_URL = 'https://login.smoobu.com/api'
@@ -16,6 +19,7 @@ class SmoobuAPI:
         }
 
     def get_bookings(self, max_retries=3, initial_delay=1):
+        logger.debug("Entering get_bookings method")
         start_date = datetime.now()
         end_date = start_date + timedelta(weeks=4)
         params = {
@@ -26,10 +30,12 @@ class SmoobuAPI:
         for attempt in range(max_retries):
             try:
                 url = f"{self.BASE_URL}/reservations"
+                logger.debug(f"Sending request to {url}")
                 response = requests.get(url, headers=self.headers, params=params)
                 response.raise_for_status()
                 
                 data = response.json()
+                logger.debug(f"Received response: {json.dumps(data, indent=2)}")
                 bookings = []
                 for booking in data.get('bookings', []):
                     adults = booking.get('adults', 0) or 0
@@ -46,13 +52,15 @@ class SmoobuAPI:
                         'type': booking.get('type', 'Unknown'),
                         'phone_number': booking.get('phone', 'N/A'),
                         'assistance_notes': booking.get('notes', 'N/A'),
-                        'language': booking.get('language', 'N/A')  # Added language field
+                        'language': booking.get('language', 'N/A')
                     })
+                logger.debug(f"Processed {len(bookings)} bookings")
                 return bookings, None
             except requests.RequestException as e:
+                logger.error(f"Request failed: {str(e)}")
                 if attempt < max_retries - 1:
                     delay = initial_delay * (2 ** attempt)
-                    print(f"Request failed. Retrying in {delay} seconds...")
+                    logger.info(f"Retrying in {delay} seconds...")
                     time.sleep(delay)
                 else:
                     error_message = f"Error fetching bookings after {max_retries} attempts: {str(e)}"
@@ -61,7 +69,7 @@ class SmoobuAPI:
                         error_message += f"\nResponse content: {e.response.text[:500]}..."
                     else:
                         error_message += "\nNo response object available"
-                    print(error_message)
+                    logger.error(error_message)
                     return [], error_message
 
     # Add more API methods as needed

@@ -6,10 +6,17 @@
 <div class="calendar-container">
     <h2 class="calendar-title">{{ _('Calendar View') }}</h2>
     
+    <form method="GET" action="{{ url_for('calendar_view') }}" class="filter-form">
+        <input type="text" name="guest_filter" placeholder="{{ _('Filter by guest name') }}" value="{{ guest_filter }}">
+        <input type="text" name="apartment_filter" placeholder="{{ _('Filter by apartment name') }}" value="{{ apartment_filter }}">
+        <input type="date" name="date_filter" value="{{ date_filter }}">
+        <button type="submit">{{ _('Filter') }}</button>
+    </form>
+
     <div class="calendar-navigation">
-        <a href="{{ url_for('calendar_view', date=prev_two_weeks) }}" class="nav-button">&lt; {{ _('Previous') }}</a>
+        <a href="{{ url_for('calendar_view', date=prev_two_weeks, guest_filter=guest_filter, apartment_filter=apartment_filter, date_filter=date_filter) }}" class="nav-button">&lt; {{ _('Previous') }}</a>
         <input type="date" id="datePicker" value="{{ current_date.strftime('%Y-%m-%d') }}" class="date-picker">
-        <a href="{{ url_for('calendar_view', date=next_two_weeks) }}" class="nav-button">{{ _('Next') }} &gt;</a>
+        <a href="{{ url_for('calendar_view', date=next_two_weeks, guest_filter=guest_filter, apartment_filter=apartment_filter, date_filter=date_filter) }}" class="nav-button">{{ _('Next') }} &gt;</a>
     </div>
 
     <div class="calendar-weeks">
@@ -54,7 +61,9 @@
 {% block scripts %}
 <script>
 document.getElementById('datePicker').addEventListener('change', function(e) {
-    window.location.href = "{{ url_for('calendar_view') }}?date=" + e.target.value;
+    const url = new URL(window.location.href);
+    url.searchParams.set('date', e.target.value);
+    window.location.href = url.toString();
 });
 </script>
 {% endblock %}
