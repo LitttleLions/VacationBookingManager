@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Vacation Rental Booking Management{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>Vacation Rental Bookings</h1>
+            <ul>
+                <li><a href="{{ url_for('booking_list') }}">{{ _('Booking List') }}</a></li>
+                <li><a href="{{ url_for('calendar_view') }}">{{ _('Calendar View') }}</a></li>
+                <li><a href="{{ url_for('print_view') }}">{{ _('Print View') }}</a></li>
+                <li>
+                    <select onchange="window.location.href=this.value">
+                        <option value="{{ url_for('booking_list', lang='en') }}" {% if get_locale() == 'en' %}selected{% endif %}>English</option>
+                        <option value="{{ url_for('booking_list', lang='de') }}" {% if get_locale() == 'de' %}selected{% endif %}>Deutsch</option>
+                    </select>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        {% block content %}{% endblock %}
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% if debug %}
+    <div class="debug-info">
+        <h3>Debug Information</h3>
+        <pre>{{ g.get('debug_info', '') | safe }}</pre>
+    </div>
+    {% endif %}
+</body>
+</html>

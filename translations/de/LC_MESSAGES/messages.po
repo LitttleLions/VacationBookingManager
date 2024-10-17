@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: de\n"
+
+msgid "Booking List"
+msgstr "Buchungsliste"
+
+msgid "Calendar View"
+msgstr "Kalenderansicht"
+
+msgid "Print View"
+msgstr "Druckansicht"
+
+msgid "Guest Name"
+msgstr "Gästename"
+
+msgid "Booking Date"
+msgstr "Buchungsdatum"
+
+msgid "Apartment Name"
+msgstr "Apartmentname"
+
+msgid "Check-in"
+msgstr "Check-in"
+
+msgid "Check-out"
+msgstr "Check-out"
+
+msgid "Guests"
+msgstr "Gäste"
+
+msgid "Total Price"
+msgstr "Gesamtpreis"
+
+msgid "Monday"
+msgstr "Montag"
+
+msgid "Tuesday"
+msgstr "Dienstag"
+
+msgid "Wednesday"
+msgstr "Mittwoch"
+
+msgid "Thursday"
+msgstr "Donnerstag"
+
+msgid "Friday"
+msgstr "Freitag"
+
+msgid "Saturday"
+msgstr "Samstag"
+
+msgid "Sunday"
+msgstr "Sonntag"

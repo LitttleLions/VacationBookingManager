@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Calendar View') }}{% endblock %}
+
+{% block content %}
+<h2>{{ _('Calendar View') }}</h2>
+<div class="calendar">
+    <div class="calendar-header"></div>
+    <div class="calendar-header">{{ _('Monday') }}</div>
+    <div class="calendar-header">{{ _('Tuesday') }}</div>
+    <div class="calendar-header">{{ _('Wednesday') }}</div>
+    <div class="calendar-header">{{ _('Thursday') }}</div>
+    <div class="calendar-header">{{ _('Friday') }}</div>
+    <div class="calendar-header">{{ _('Saturday') }}</div>
+    <div class="calendar-header">{{ _('Sunday') }}</div>
+
+    {% for apartment in apartments %}
+    <div class="apartment-name">{{ apartment.name }}</div>
+    {% for day in range(7) %}
+    <div class="calendar-cell">
+        {% for booking in bookings %}
+        {% if booking.apartment_id == apartment.id and booking.check_in <= current_date + day and booking.check_out > current_date + day %}
+        <div class="booking-item">
+            {{ booking.guest_name }}
+            <div class="booking-details">
+                <p>{{ _('Check-in') }}: {{ booking.check_in }}</p>
+                <p>{{ _('Check-out') }}: {{ booking.check_out }}</p>
+                <p>{{ _('Guests') }}: {{ booking.guests }}</p>
+            </div>
+        </div>
+        {% endif %}
+        {% endfor %}
+    </div>
+    {% endfor %}
+    {% endfor %}
+</div>
+{% endblock %}

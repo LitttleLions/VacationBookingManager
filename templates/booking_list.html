@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}{{ _('Booking List') }}{% endblock %}
+
+{% block content %}
+<h2>{{ _('Booking List') }}</h2>
+<table>
+    <thead>
+        <tr>
+            <th>{{ _('Guest Name') }}</th>
+            <th>{{ _('Booking Date') }}</th>
+            <th>{{ _('Apartment Name') }}</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for booking in bookings %}
+        <tr class="booking-item">
+            <td>{{ booking.guest_name }}</td>
+            <td>{{ booking.booking_date }}</td>
+            <td>{{ booking.apartment_name }}</td>
+            <div class="booking-details">
+                <p>{{ _('Check-in') }}: {{ booking.check_in }}</p>
+                <p>{{ _('Check-out') }}: {{ booking.check_out }}</p>
+                <p>{{ _('Guests') }}: {{ booking.guests }}</p>
+                <p>{{ _('Total Price') }}: {{ booking.total_price }}</p>
+            </div>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}
