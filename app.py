@@ -3,6 +3,7 @@ from flask import Flask, render_template, request, g, flash
 from flask_babel import Babel
 from urllib.parse import urlparse
 from smoobu_api import SmoobuAPI
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY") or "a secret key"
@@ -24,16 +25,31 @@ def booking_list():
     if error:
         flash(error, 'error')
     
-    filter_query = request.args.get('filter', '').lower()
-    bookings = [b for b in bookings if b['type'].lower() != 'cancellation']
+    guest_filter = request.args.get('guest_filter', '').lower()
+    apartment_filter = request.args.get('apartment_filter', '').lower()
+    date_filter = request.args.get('date_filter', datetime.now().strftime('%Y-%m-%d'))
     
-    if filter_query:
-        bookings = [b for b in bookings if filter_query in b['guest_name'].lower() 
-                    or filter_query in b['apartment_name'].lower()
-                    or filter_query in b['status'].lower()
-                    or filter_query in b['type'].lower()]
+    filtered_bookings = []
+    for booking in bookings:
+        if booking['type'].lower() == 'cancellation':
+            continue
+        
+        if guest_filter and guest_filter not in booking['guest_name'].lower():
+            continue
+        
+        if apartment_filter and apartment_filter not in booking['apartment_name'].lower():
+            continue
+        
+        booking_date = datetime.strptime(booking['check_in'], '%Y-%m-%d')
+        if booking_date < datetime.strptime(date_filter, '%Y-%m-%d'):
+            continue
+        
+        filtered_bookings.append(booking)
     
-    return render_template('booking_list.html', bookings=bookings)
+    return render_template('booking_list.html', bookings=filtered_bookings, 
+                           guest_filter=guest_filter, 
+                           apartment_filter=apartment_filter, 
+                           date_filter=date_filter)
 
 @app.route('/calendar')
 def calendar_view():

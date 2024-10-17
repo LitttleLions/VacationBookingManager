@@ -15,7 +15,9 @@
     {% endwith %}
 
     <form method="GET" action="{{ url_for('booking_list') }}">
-        <input type="text" name="filter" placeholder="{{ _('Filter by guest, apartment, status, or type') }}" value="{{ request.args.get('filter', '') }}">
+        <input type="text" name="guest_filter" placeholder="{{ _('Filter by guest name') }}" value="{{ guest_filter }}">
+        <input type="text" name="apartment_filter" placeholder="{{ _('Filter by apartment name') }}" value="{{ apartment_filter }}">
+        <input type="date" name="date_filter" value="{{ date_filter }}">
         <button type="submit">{{ _('Filter') }}</button>
     </form>
 
@@ -25,6 +27,10 @@
                 <th>{{ _('Guest Name') }}</th>
                 <th>{{ _('Booking Date') }}</th>
                 <th>{{ _('Apartment Name') }}</th>
+                <th>{{ _('Check-in') }}</th>
+                <th>{{ _('Check-out') }}</th>
+                <th>{{ _('Guests') }}</th>
+                <th>{{ _('Total Price') }}</th>
                 <th>{{ _('Status') }}</th>
                 <th>{{ _('Type') }}</th>
             </tr>
@@ -35,6 +41,10 @@
                 <td>{{ booking.guest_name }}</td>
                 <td>{{ booking.booking_date }}</td>
                 <td>{{ booking.apartment_name }}</td>
+                <td>{{ booking.check_in }}</td>
+                <td>{{ booking.check_out }}</td>
+                <td>{{ booking.guests }}</td>
+                <td>{{ booking.total_price }}</td>
                 <td>{{ booking.status }}</td>
                 <td>{{ booking.type }}</td>
             </tr>

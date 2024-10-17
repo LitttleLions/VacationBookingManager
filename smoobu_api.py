@@ -15,9 +15,10 @@ class SmoobuAPI:
         }
 
     def get_bookings(self):
-        end_date = datetime.now() + timedelta(weeks=4)
+        start_date = datetime.now()
+        end_date = start_date + timedelta(weeks=4)
         params = {
-            'from': datetime.now().strftime('%Y-%m-%d'),
+            'from': start_date.strftime('%Y-%m-%d'),
             'to': end_date.strftime('%Y-%m-%d')
         }
         try:
