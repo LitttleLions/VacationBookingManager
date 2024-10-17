@@ -76,18 +76,13 @@ def calendar_view():
     date_filter = request.args.get('date_filter', '')
 
     current_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
-    week1_start = current_date - timedelta(days=current_date.weekday())
-    week2_start = week1_start + timedelta(weeks=1)
-
-    week1_dates = [week1_start + timedelta(days=i) for i in range(7)]
-    week2_dates = [week2_start + timedelta(days=i) for i in range(7)]
-
-    week1_number = week1_start.isocalendar()[1]
-    week2_number = week2_start.isocalendar()[1]
+    week_start = current_date - timedelta(days=current_date.weekday())
+    week_dates = [week_start + timedelta(days=i) for i in range(7)]
+    week_number = week_start.isocalendar()[1]
 
     apartments = sorted(set(booking['apartment_name'] for booking in bookings))
 
-    calendar_data = {apartment: {date: [] for date in week1_dates + week2_dates} for apartment in apartments}
+    calendar_data = {apartment: {date: [] for date in week_dates} for apartment in apartments}
 
     for booking in bookings:
         if (guest_filter in booking['guest_name'].lower() and
@@ -96,23 +91,21 @@ def calendar_view():
             booking['guest_name'] != "Unknown Guest"):
             check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d')
             check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d')
-            for date in week1_dates + week2_dates:
+            for date in week_dates:
                 if check_in <= date < check_out:
                     calendar_data[booking['apartment_name']][date].append(booking)
 
-    prev_two_weeks = (current_date - timedelta(weeks=2)).strftime('%Y-%m-%d')
-    next_two_weeks = (current_date + timedelta(weeks=2)).strftime('%Y-%m-%d')
+    prev_week = (week_start - timedelta(weeks=1)).strftime('%Y-%m-%d')
+    next_week = (week_start + timedelta(weeks=1)).strftime('%Y-%m-%d')
 
     return render_template('calendar_view.html',
                            apartments=apartments,
                            calendar_data=calendar_data,
-                           week1_dates=week1_dates,
-                           week2_dates=week2_dates,
-                           week1_number=week1_number,
-                           week2_number=week2_number,
+                           week_dates=week_dates,
+                           week_number=week_number,
                            current_date=current_date,
-                           prev_two_weeks=prev_two_weeks,
-                           next_two_weeks=next_two_weeks,
+                           prev_week=prev_week,
+                           next_week=next_week,
                            guest_filter=guest_filter,
                            apartment_filter=apartment_filter,
                            date_filter=date_filter)
@@ -140,7 +133,6 @@ def print_view():
             (apartment_filter == '' or apartment_filter == booking['apartment_name']) and
             (not date_filter or (booking['check_in'] <= date_filter <= booking['check_out'])) and
             booking['guest_name'] != "Unknown Guest"):
-            # Include channel name and assistantNotice in the booking dictionary
             booking['channel_name'] = booking.get('channel', {}).get('name', 'N/A')
             booking['assistant_notice'] = booking.get('assistance_notes', 'N/A')
             filtered_bookings.append(booking)

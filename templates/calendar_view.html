@@ -4,7 +4,7 @@
 
 {% block content %}
 <div class="calendar-container">
-    <h2 class="calendar-title">{{ _('Calendar View') }}</h2>
+    <h2 class="calendar-title">{{ _('Weekly Calendar View') }}</h2>
     
     <form method="GET" action="{{ url_for('calendar_view') }}" class="filter-form">
         <input type="text" name="guest_filter" placeholder="{{ _('Filter by guest name') }}" value="{{ guest_filter }}">
@@ -19,46 +19,48 @@
     </form>
 
     <div class="calendar-navigation">
-        <a href="{{ url_for('calendar_view', date=prev_two_weeks, guest_filter=guest_filter, apartment_filter=apartment_filter, date_filter=date_filter) }}" class="nav-button">&lt; {{ _('Previous') }}</a>
+        <a href="{{ url_for('calendar_view', date=prev_week, guest_filter=guest_filter, apartment_filter=apartment_filter, date_filter=date_filter) }}" class="nav-button">&lt; {{ _('Previous Week') }}</a>
         <input type="date" id="datePicker" value="{{ current_date.strftime('%Y-%m-%d') }}" class="date-picker">
-        <a href="{{ url_for('calendar_view', date=next_two_weeks, guest_filter=guest_filter, apartment_filter=apartment_filter, date_filter=date_filter) }}" class="nav-button">{{ _('Next') }} &gt;</a>
+        <a href="{{ url_for('calendar_view', date=next_week, guest_filter=guest_filter, apartment_filter=apartment_filter, date_filter=date_filter) }}" class="nav-button">{{ _('Next Week') }} &gt;</a>
     </div>
 
-    <div class="calendar-weeks">
-        {% for week_dates, week_number in [(week1_dates, week1_number), (week2_dates, week2_number)] %}
-        <div class="calendar-week">
-            <div class="week-number">{{ _('Week') }} {{ week_number }}</div>
-            <table class="calendar-table">
-                <thead>
-                    <tr>
-                        <th class="apartment-header">{{ _('Apartment') }}</th>
-                        {% for date in week_dates %}
-                        <th class="date-header">
-                            <div class="date-day">{{ date.strftime('%a') }}</div>
-                            <div class="date-number">{{ date.strftime('%d/%m') }}</div>
-                        </th>
-                        {% endfor %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for apartment in apartments %}
-                    <tr>
-                        <td class="apartment-name">{{ apartment }}</td>
-                        {% for date in week_dates %}
-                        <td class="calendar-cell">
-                            {% for booking in calendar_data[apartment][date] %}
-                            <div class="booking-item {{ booking.color }}" data-booking='{{ booking|tojson|forceescape }}'>
-                                {{ booking.guest_name[:10] }}{% if booking.guest_name|length > 10 %}...{% endif %}
-                            </div>
-                            {% endfor %}
-                        </td>
-                        {% endfor %}
-                    </tr>
+    <div class="calendar-week">
+        <div class="week-number">{{ _('Week') }} {{ week_number }}</div>
+        <table class="calendar-table">
+            <thead>
+                <tr>
+                    <th class="apartment-header">{{ _('Apartment') }}</th>
+                    {% for date in week_dates %}
+                    <th class="date-header">
+                        <div class="date-day">{{ date.strftime('%a') }}</div>
+                        <div class="date-number">{{ date.strftime('%d/%m') }}</div>
+                    </th>
                     {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for apartment in apartments %}
+                <tr>
+                    <td class="apartment-name">{{ apartment }}</td>
+                    {% for date in week_dates %}
+                    <td class="calendar-cell">
+                        {% for booking in calendar_data[apartment][date] %}
+                        <div class="booking-item" data-booking='{{ booking|tojson|forceescape }}'>
+                            <div class="booking-guest">{{ booking.guest_name }}</div>
+                            <div class="booking-details">
+                                <div>{{ _('Check-in') }}: {{ booking.check_in }}</div>
+                                <div>{{ _('Check-out') }}: {{ booking.check_out }}</div>
+                                <div>{{ _('Guests') }}: {{ booking.guests }}</div>
+                                <div>{{ _('Total Price') }}: {{ booking.total_price }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}
