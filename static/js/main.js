@@ -1,13 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
     const container = document.querySelector('.container');
-    let currentDetails = null;
+    if (!container) return;
 
     container.addEventListener('mouseover', function(e) {
         const item = e.target.closest('.booking-item');
         if (item) {
-            if (currentDetails) {
-                currentDetails.remove();
-            }
             const details = document.createElement('div');
             details.className = 'booking-details';
             details.innerHTML = `
@@ -21,15 +18,15 @@ document.addEventListener('DOMContentLoaded', function() {
             details.style.position = 'absolute';
             details.style.left = (e.pageX + 10) + 'px';
             details.style.top = (e.pageY + 10) + 'px';
-            container.appendChild(details);
-            currentDetails = details;
-        }
-    });
-
-    container.addEventListener('mouseout', function(e) {
-        if (!e.target.closest('.booking-item') && currentDetails) {
-            currentDetails.remove();
-            currentDetails = null;
+            details.style.backgroundColor = 'white';
+            details.style.border = '1px solid #ccc';
+            details.style.padding = '5px';
+            details.style.zIndex = '1000';
+            document.body.appendChild(details);
+            
+            item.addEventListener('mouseout', function() {
+                details.remove();
+            });
         }
     });
 });
