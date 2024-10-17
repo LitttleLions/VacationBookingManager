@@ -1,9 +1,64 @@
-/* ... existing styles ... */
+/* General styles */
+body {
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    width: 95%;
+    margin: auto;
+    overflow: hidden;
+    padding: 20px;
+}
+
+/* Calendar styles */
+.calendar-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.calendar-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.calendar-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.nav-button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 15px;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+.nav-button:hover {
+    background-color: #0056b3;
+}
+
+.date-picker {
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
 
 .calendar-weeks {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 30px;
 }
 
 .calendar-week {
@@ -16,37 +71,128 @@
 .week-number {
     font-weight: bold;
     text-align: center;
-    padding: 10px 0;
+    padding: 12px 0;
     background-color: #f0f0f0;
-    border-radius: 4px 4px 0 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.calendar-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 1px;
+}
+
+.apartment-header, .date-header {
+    background-color: #f8f9fa;
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.apartment-name {
+    background-color: #f8f9fa;
+    padding: 10px;
+    font-weight: bold;
+    text-align: left;
+    width: 150px;
+}
+
+.calendar-cell {
+    vertical-align: top;
+    height: 100px;
+    padding: 5px;
+    border: 1px solid #e0e0e0;
 }
 
 .booking-item {
-    height: 40px;
+    height: 60px;
     display: flex;
     align-items: center;
-    padding: 4px 6px;
-    margin-bottom: 4px;
-    font-size: 0.85em;
+    padding: 6px 8px;
+    margin-bottom: 5px;
+    font-size: 0.9em;
     border-radius: 4px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
     box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    color: #fff;
 }
 
-/* ... rest of the existing styles ... */
+.booking-item.orange { background-color: #ffa500; }
+.booking-item.blue { background-color: #3498db; }
+.booking-item.teal { background-color: #20c997; }
+
+.date-day {
+    font-weight: normal;
+    font-size: 0.9em;
+    color: #666;
+}
+
+.date-number {
+    font-weight: bold;
+    font-size: 1.1em;
+    color: #333;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+    .apartment-name {
+        width: 120px;
+    }
+    
+    .booking-item {
+        font-size: 0.8em;
+    }
+}
+
+@media (max-width: 992px) {
+    .calendar-cell {
+        height: 80px;
+    }
+    
+    .booking-item {
+        height: 50px;
+    }
+}
 
 @media (max-width: 768px) {
     .calendar-week {
-        min-width: auto;
+        overflow-x: auto;
     }
-
+    
+    .calendar-table {
+        min-width: 800px;
+    }
+    
     .apartment-name {
-        width: 80px;
+        width: 100px;
     }
-
+    
     .booking-item {
         font-size: 0.75em;
+        height: 40px;
     }
+}
+
+/* Tooltip styles */
+.booking-details {
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.booking-details p {
+    margin: 5px 0;
+    font-size: 0.9em;
+}
+
+.booking-details strong {
+    font-weight: bold;
+    color: #333;
 }
