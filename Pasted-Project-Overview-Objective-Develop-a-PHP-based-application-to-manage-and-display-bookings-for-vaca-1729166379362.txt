@@ -1,0 +1,97 @@
+Project Overview
+
+Objective:
+Develop a PHP-based application to manage and display bookings for vacation rentals. The application will retrieve data through the Smoobu API and provide various views and functionalities to efficiently manage bookings.
+
+Technology Stack:
+
+    Server: PHP 7
+    Database: None (direct API usage)
+    Frontend: HTML, CSS (with a focus on modern and appealing design)
+    Additional Requirements: Multilingual support (starting with German and English)
+
+API Integration
+
+API Provider: Smoobu
+Documentation: Smoobu API Documentation
+
+API Credentials:
+
+    SettingsChannelId: 1115695
+    APIKey: 9V1lV6cSqy8EbeOV1v4cXIIuIgNl41Pz
+
+    Security Note: Ensure that API keys are stored securely on the server and are not publicly accessible. Never share API keys in public forums or with unauthorized individuals.
+
+Application Features
+1. Overall Booking List
+
+    Data Source: Smoobu API
+    Data Filtering:
+        Current date up to the next 4 weeks
+    Filter Options:
+        Guest Name
+        Booking Date
+        Apartment Name
+    Display:
+        List all bookings with relevant data
+        Mouse-over effect: Hovering over a booking opens a small window with detailed information
+    Data Points per Booking:
+        Basic information directly in the list
+        Extended information in the mouse-over window
+
+2. Calendar View
+
+    Display:
+        Similar to an Outlook calendar
+        Weekly view with days of the week at the top, starting with Monday
+        First column of each row: Apartment name, sorted alphabetically
+    Data Integration:
+        Display bookings per day and apartment
+        Use the same data as in the overall booking list
+
+3. Print View
+
+    Objective:
+        Provide a print-friendly overview of all bookings
+    Requirements:
+        Clear and organized presentation
+        All relevant information at a glance
+
+4. Multilingual Support
+
+    Languages:
+        Start with German and English
+        Expandable to additional languages later
+    Implementation:
+        Language switching within the application
+        Use of language files or packages for easy expansion
+
+5. Visual Presentation
+
+    Design:
+        Modern and appealing user interface
+        Use harmonious colors, preferably orange as an accent color
+    Flexibility:
+        Ability to adjust the design later based on screenshots or specific requirements
+
+Additional Requirements
+
+    Debugging:
+        Incorporate debug information in the output for error analysis and troubleshooting
+    Compatibility:
+        Ensure the application runs on a PHP 7 server
+        No database usage required, direct API integration
+
+Additional Considerations
+
+    Security Aspects:
+        Secure handling of API keys
+        Validation and sanitization of all inputs to prevent security vulnerabilities
+
+    Performance Optimization:
+        Efficient use of the API to minimize loading times
+        Consider caching mechanisms if API requests are frequent
+
+    User-Friendliness:
+        Intuitive navigation and operation
+        Responsive design for various devices (desktop, tablet, mobile)
