@@ -13,8 +13,9 @@
     </div>
 
     <div class="calendar-weeks">
-        {% for week_dates in [week1_dates, week2_dates] %}
+        {% for week_dates, week_number in [(week1_dates, week1_number), (week2_dates, week2_number)] %}
         <div class="calendar-week">
+            <div class="week-number">{{ _('Week') }} {{ week_number }}</div>
             <table class="calendar-table">
                 <thead>
                     <tr>
