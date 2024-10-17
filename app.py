@@ -25,6 +25,9 @@ def booking_list():
     if error:
         flash(error, 'error')
     
+    if not bookings:
+        flash("No bookings available at the moment. The Smoobu API might be undergoing maintenance. Please try again later.", 'warning')
+    
     guest_filter = request.args.get('guest_filter', '').lower()
     apartment_filter = request.args.get('apartment_filter', '').lower()
     date_filter = request.args.get('date_filter', datetime.now().strftime('%Y-%m-%d'))
