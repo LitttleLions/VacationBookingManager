@@ -72,42 +72,42 @@ def calendar_view():
     # Get the current date or the date from the query parameters
     current_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d').date()
 
-    # Calculate the start of the week (Monday)
+    # Calculate the start of the current week (Monday)
     start_of_week = current_date - timedelta(days=current_date.weekday())
     
-    # Calculate the end of the week (Sunday)
-    end_of_week = start_of_week + timedelta(days=6)
+    # Calculate the end of the next week (Sunday)
+    end_of_next_week = start_of_week + timedelta(days=13)
 
-    # Create a list of dates for the week
-    week_dates = [start_of_week + timedelta(days=i) for i in range(7)]
+    # Create a list of dates for two weeks
+    two_week_dates = [start_of_week + timedelta(days=i) for i in range(14)]
 
     # Get unique apartment names
     apartments = list(set(booking['apartment_name'] for booking in bookings))
     apartments.sort()
 
     # Organize bookings by apartment and date
-    calendar_data = {apartment: {d: [] for d in week_dates} for apartment in apartments}
+    calendar_data = {apartment: {d: [] for d in two_week_dates} for apartment in apartments}
     for booking in bookings:
         check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d').date()
         check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d').date()
         apartment = booking['apartment_name']
         
         if apartment in apartments:
-            for d in week_dates:
+            for d in two_week_dates:
                 if check_in <= d < check_out and booking['guest_name'] != "Unknown Guest":
                     calendar_data[apartment][d].append(booking)
 
-    # Calculate previous and next week
-    prev_week = start_of_week - timedelta(days=7)
-    next_week = start_of_week + timedelta(days=7)
+    # Calculate previous and next two weeks
+    prev_two_weeks = start_of_week - timedelta(days=14)
+    next_two_weeks = start_of_week + timedelta(days=14)
 
     return render_template('calendar_view.html', 
                            current_date=current_date,
-                           week_dates=week_dates,
+                           two_week_dates=two_week_dates,
                            apartments=apartments,
                            calendar_data=calendar_data,
-                           prev_week=prev_week,
-                           next_week=next_week)
+                           prev_two_weeks=prev_two_weeks,
+                           next_two_weeks=next_two_weeks)
 
 @app.route('/print')
 def print_view():

@@ -86,7 +86,7 @@ th {
     border: 1px solid #ddd;
     padding: 5px;
     text-align: center;
-    min-width: 100px;
+    min-width: 80px;
 }
 
 .calendar th {
@@ -95,9 +95,9 @@ th {
 }
 
 .calendar-cell {
-    height: 100px;
+    height: 60px;
     vertical-align: top;
-    padding: 5px;
+    padding: 2px;
 }
 
 .calendar .booking-item {
@@ -110,6 +110,10 @@ th {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 20px;
 }
 
 .calendar-navigation {
@@ -125,7 +129,7 @@ th {
 }
 
 /* Add gap between weeks */
-.calendar tbody tr:not(:last-child) {
+.calendar tbody tr:nth-child(7n) {
     border-bottom: 10px solid transparent;
 }
 

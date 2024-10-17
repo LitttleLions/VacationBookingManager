@@ -5,63 +5,74 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
 
-    let currentDetails = null;
+    let currentTooltip = null;
 
-    function createDetailsElement(item) {
-        const details = document.createElement('div');
-        details.className = 'booking-details';
-        details.innerHTML = `
-            <p>Apartment: ${item.dataset.apartmentName || 'N/A'}</p>
-            <p>Guest: ${item.dataset.guestName || 'N/A'}</p>
-            <p>Phone: ${item.dataset.phoneNumber || 'N/A'}</p>
-            <p>Check-in: ${item.dataset.checkIn || 'N/A'}</p>
-            <p>Check-out: ${item.dataset.checkOut || 'N/A'}</p>
-            <p>Guests: ${item.dataset.guests || 'N/A'}</p>
-            <p>Assistance Notes: ${item.dataset.assistanceNotes || 'N/A'}</p>
-            <p>Language: ${item.dataset.language || 'N/A'}</p>
-            <p>Booking Date: ${item.dataset.bookingDate || 'N/A'}</p>
-            <p>Total Price: ${item.dataset.totalPrice || 'N/A'}</p>
-            <p>Status: ${item.dataset.status || 'N/A'}</p>
-            <p>Type: ${item.dataset.type || 'N/A'}</p>
+    function createTooltip(bookingData) {
+        const tooltip = document.createElement('div');
+        tooltip.className = 'booking-details';
+        tooltip.innerHTML = `
+            <p><strong>Guest:</strong> ${bookingData.guest_name}</p>
+            <p><strong>Apartment:</strong> ${bookingData.apartment_name}</p>
+            <p><strong>Check-in:</strong> ${bookingData.check_in}</p>
+            <p><strong>Check-out:</strong> ${bookingData.check_out}</p>
+            <p><strong>Guests:</strong> ${bookingData.guests}</p>
+            <p><strong>Total Price:</strong> ${bookingData.total_price}</p>
+            <p><strong>Phone:</strong> ${bookingData.phone_number}</p>
+            <p><strong>Language:</strong> ${bookingData.language}</p>
+            <p><strong>Notes:</strong> ${bookingData.assistance_notes}</p>
         `;
-        return details;
+        return tooltip;
     }
 
-    function positionDetails(details, x, y) {
-        if (details) {
-            details.style.position = 'absolute';
-            details.style.left = (x + 10) + 'px';
-            details.style.top = (y + 10) + 'px';
+    function positionTooltip(tooltip, x, y) {
+        const rect = tooltip.getBoundingClientRect();
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        let left = x + 10;
+        let top = y + 10;
+
+        if (left + rect.width > viewportWidth) {
+            left = viewportWidth - rect.width - 10;
         }
+
+        if (top + rect.height > viewportHeight) {
+            top = viewportHeight - rect.height - 10;
+        }
+
+        tooltip.style.position = 'fixed';
+        tooltip.style.left = left + 'px';
+        tooltip.style.top = top + 'px';
     }
 
     container.addEventListener('mouseover', function(e) {
-        const item = e.target.closest('.booking-item');
-        if (item) {
-            if (currentDetails) {
-                currentDetails.remove();
+        const bookingItem = e.target.closest('.booking-item');
+        if (bookingItem) {
+            if (currentTooltip) {
+                currentTooltip.remove();
             }
             try {
-                const details = createDetailsElement(item);
-                positionDetails(details, e.pageX, e.pageY);
-                container.appendChild(details);
-                currentDetails = details;
+                const bookingData = JSON.parse(bookingItem.dataset.booking);
+                const tooltip = createTooltip(bookingData);
+                positionTooltip(tooltip, e.clientX, e.clientY);
+                document.body.appendChild(tooltip);
+                currentTooltip = tooltip;
             } catch (error) {
-                console.error('Error creating details element:', error);
+                console.error('Error creating tooltip:', error);
             }
         }
     });
 
     document.addEventListener('mousemove', function(e) {
-        if (currentDetails) {
-            positionDetails(currentDetails, e.pageX, e.pageY);
+        if (currentTooltip) {
+            positionTooltip(currentTooltip, e.clientX, e.clientY);
         }
     });
 
     container.addEventListener('mouseout', function(e) {
-        if (!e.target.closest('.booking-item') && currentDetails) {
-            currentDetails.remove();
-            currentDetails = null;
+        if (!e.target.closest('.booking-item') && currentTooltip) {
+            currentTooltip.remove();
+            currentTooltip = null;
         }
     });
 
