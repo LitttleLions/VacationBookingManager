@@ -20,9 +20,9 @@ babel = Babel(app, locale_selector=get_locale)
 
 @app.route('/')
 def booking_list():
-    bookings = smoobu_api.get_bookings()
-    if not bookings:
-        flash('Error fetching bookings. Please try again later.', 'error')
+    bookings, error = smoobu_api.get_bookings()
+    if error:
+        flash(error, 'error')
     
     filter_query = request.args.get('filter', '').lower()
     if filter_query:
@@ -32,12 +32,16 @@ def booking_list():
 
 @app.route('/calendar')
 def calendar_view():
-    bookings = smoobu_api.get_bookings()
+    bookings, error = smoobu_api.get_bookings()
+    if error:
+        flash(error, 'error')
     return render_template('calendar_view.html', bookings=bookings)
 
 @app.route('/print')
 def print_view():
-    bookings = smoobu_api.get_bookings()
+    bookings, error = smoobu_api.get_bookings()
+    if error:
+        flash(error, 'error')
     return render_template('print_view.html', bookings=bookings)
 
 @app.context_processor
