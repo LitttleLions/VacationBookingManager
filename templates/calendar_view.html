@@ -3,41 +3,57 @@
 {% block title %}{{ _('Calendar View') }}{% endblock %}
 
 {% block content %}
-<h2>{{ _('Calendar View') }} - {{ _('Weeks of') }} {{ two_week_dates[0].strftime('%B %d') }} - {{ two_week_dates[-1].strftime('%B %d, %Y') }}</h2>
+<div class="calendar-container">
+    <h2>{{ _('Calendar View') }}</h2>
+    
+    <div class="calendar-navigation">
+        <a href="{{ url_for('calendar_view', date=prev_two_weeks) }}">&lt; {{ _('Previous') }}</a>
+        <input type="date" id="datePicker" value="{{ current_date.strftime('%Y-%m-%d') }}">
+        <a href="{{ url_for('calendar_view', date=next_two_weeks) }}">{{ _('Next') }} &gt;</a>
+    </div>
 
-<div class="calendar-navigation">
-    <a href="{{ url_for('calendar_view', date=prev_two_weeks) }}">&lt; {{ _('Previous Two Weeks') }}</a>
-    <a href="{{ url_for('calendar_view', date=next_two_weeks) }}">{{ _('Next Two Weeks') }} &gt;</a>
-</div>
-
-<div class="calendar">
-    {% for week_start in [0, 7] %}
-    <table class="week-table">
-        <thead>
-            <tr>
-                <th>{{ _('Apartment') }}</th>
-                {% for date in two_week_dates[week_start:week_start+7] %}
-                <th>{{ date.strftime('%a') }}<br>{{ date.strftime('%d/%m') }}</th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for apartment in apartments %}
-            <tr>
-                <td>{{ apartment }}</td>
-                {% for date in two_week_dates[week_start:week_start+7] %}
-                <td class="calendar-cell">
-                    {% for booking in calendar_data[apartment][date] %}
-                    <div class="booking-item" data-booking='{{ booking|tojson|forceescape }}'>
-                        {{ booking.guest_name[:10] }}...
-                    </div>
+    <div class="calendar-weeks">
+        {% for week_dates in [week1_dates, week2_dates] %}
+        <div class="calendar-week">
+            <table>
+                <thead>
+                    <tr>
+                        <th>{{ _('Apartment') }}</th>
+                        {% for date in week_dates %}
+                        <th>
+                            <div>{{ date.strftime('%a') }}</div>
+                            <div>{{ date.strftime('%d/%m') }}</div>
+                        </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for apartment in apartments %}
+                    <tr>
+                        <td class="apartment-name">{{ apartment }}</td>
+                        {% for date in week_dates %}
+                        <td class="calendar-cell">
+                            {% for booking in calendar_data[apartment][date] %}
+                            <div class="booking-item {{ booking.color }}" data-booking='{{ booking|tojson|forceescape }}'>
+                                {{ booking.guest_name[:10] }}...
+                            </div>
+                            {% endfor %}
+                        </td>
+                        {% endfor %}
+                    </tr>
                     {% endfor %}
-                </td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('datePicker').addEventListener('change', function(e) {
+    window.location.href = "{{ url_for('calendar_view') }}?date=" + e.target.value;
+});
+</script>
 {% endblock %}

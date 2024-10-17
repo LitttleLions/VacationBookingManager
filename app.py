@@ -69,15 +69,19 @@ def calendar_view():
     current_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d').date()
 
     start_of_week = current_date - timedelta(days=current_date.weekday())
-    
     end_of_next_week = start_of_week + timedelta(days=13)
 
     two_week_dates = [start_of_week + timedelta(days=i) for i in range(14)]
+    week1_dates = two_week_dates[:7]
+    week2_dates = two_week_dates[7:]
 
     apartments = list(set(booking['apartment_name'] for booking in bookings))
     apartments.sort()
 
     calendar_data = {apartment: {d: [] for d in two_week_dates} for apartment in apartments}
+    colors = ['orange', 'blue', 'teal']
+    color_index = 0
+
     for booking in bookings:
         check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d').date()
         check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d').date()
@@ -86,10 +90,9 @@ def calendar_view():
         if apartment in apartments:
             for d in two_week_dates:
                 if check_in <= d < check_out and booking['guest_name'] != "Unknown Guest":
+                    booking['color'] = colors[color_index]
                     calendar_data[apartment][d].append(booking)
-
-    week1_dates = two_week_dates[:7]
-    week2_dates = two_week_dates[7:]
+            color_index = (color_index + 1) % len(colors)
 
     prev_two_weeks = start_of_week - timedelta(days=14)
     next_two_weeks = start_of_week + timedelta(days=14)
