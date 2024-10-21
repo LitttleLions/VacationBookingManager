@@ -100,13 +100,15 @@ def calendar_view():
                 if check_in <= date < check_out:
                     calendar_data[booking['apartment_name']][date].append(booking)
 
+    apartments_with_bookings = [apartment for apartment in apartments if any(calendar_data[apartment].values())]
+
     prev_week = (week_start - timedelta(weeks=1)).strftime('%Y-%m-%d')
     next_week = (week_start + timedelta(weeks=1)).strftime('%Y-%m-%d')
 
     today = date.today()
 
     return render_template('calendar_view.html',
-                           apartments=apartments,
+                           apartments=apartments_with_bookings,
                            calendar_data=calendar_data,
                            week_dates=week_dates,
                            week_number=week_number,

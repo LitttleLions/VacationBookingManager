@@ -41,11 +41,12 @@
             </thead>
             <tbody>
                 {% for apartment in apartments %}
+                {% if calendar_data.get(apartment) and calendar_data[apartment]|length > 0 %}
                 <tr>
                     <td class="apartment-name">{{ apartment }}</td>
                     {% for date in week_dates %}
                     <td class="calendar-cell {% if date.date() == today %}today{% endif %}">
-                        {% for booking in calendar_data[apartment][date] %}
+                        {% for booking in calendar_data[apartment].get(date, []) %}
                         <div class="booking-item" data-booking='{{ booking|tojson|forceescape }}'>
                             <div class="booking-guest">{{ booking.guest_name }}</div>
                             <div class="booking-details">
@@ -54,12 +55,14 @@
                                 <div>{{ _('Guests') }}: {{ booking.guests }}</div>
                                 <div>{{ _('Total Price') }}: {{ booking.total_price }}</div>
                                 <div>{{ _('Channel') }}: {{ booking.channel_name }}</div>
+                                <div>{{ _('Assistant Notice') }}: {{ booking.assistantNotice }}</div>
                             </div>
                         </div>
                         {% endfor %}
                     </td>
                     {% endfor %}
                 </tr>
+                {% endif %}
                 {% endfor %}
             </tbody>
         </table>
