@@ -32,7 +32,7 @@
                 <tr>
                     <th class="apartment-header">{{ _('Apartment') }}</th>
                     {% for date in week_dates %}
-                    <th class="date-header">
+                    <th class="date-header {% if date.date() == today %}today{% endif %}">
                         <div class="date-day">{{ date.strftime('%a') }}</div>
                         <div class="date-number">{{ date.strftime('%d/%m') }}</div>
                     </th>
@@ -44,7 +44,7 @@
                 <tr>
                     <td class="apartment-name">{{ apartment }}</td>
                     {% for date in week_dates %}
-                    <td class="calendar-cell">
+                    <td class="calendar-cell {% if date.date() == today %}today{% endif %}">
                         {% for booking in calendar_data[apartment][date] %}
                         <div class="booking-item" data-booking='{{ booking|tojson|forceescape }}'>
                             <div class="booking-guest">{{ booking.guest_name }}</div>

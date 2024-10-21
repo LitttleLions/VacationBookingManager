@@ -20,7 +20,8 @@ document.addEventListener('DOMContentLoaded', function() {
             <p><strong>Phone:</strong> ${bookingData.phone_number || 'N/A'}</p>
             <p><strong>Language:</strong> ${bookingData.language || 'N/A'}</p>
             <p><strong>Channel:</strong> ${bookingData.channel_name || 'N/A'}</p>
-            <p><strong>Assistance Notes:</strong> ${bookingData.assistance_notes || 'N/A'}</p>
+            <p><strong>Notice:</strong> ${bookingData.notice || 'N/A'}</p>
+            <p><strong>Assistance Notes:</strong> ${bookingData.assistantNotice || 'N/A'}</p>
         `;
         return tooltip;
     }

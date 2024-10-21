@@ -1,7 +1,7 @@
 import logging
 from flask import Flask, render_template, request, flash, g
 from flask_babel import Babel, gettext as _
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from smoobu_api import SmoobuAPI
 from config import SMOOBU_SETTINGS_CHANNEL_ID, SMOOBU_API_KEY, BABEL_DEFAULT_LOCALE, BABEL_DEFAULT_TIMEZONE
 
@@ -103,6 +103,8 @@ def calendar_view():
     prev_week = (week_start - timedelta(weeks=1)).strftime('%Y-%m-%d')
     next_week = (week_start + timedelta(weeks=1)).strftime('%Y-%m-%d')
 
+    today = date.today()
+
     return render_template('calendar_view.html',
                            apartments=apartments,
                            calendar_data=calendar_data,
@@ -114,7 +116,8 @@ def calendar_view():
                            guest_filter=guest_filter,
                            apartment_filter=apartment_filter,
                            start_date_filter=start_date_filter,
-                           end_date_filter=end_date_filter)
+                           end_date_filter=end_date_filter,
+                           today=today)
 
 @app.route('/print')
 def print_view():

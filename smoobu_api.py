@@ -41,12 +41,10 @@ class SmoobuAPI:
                     adults = booking.get('adults', 0) or 0
                     children = booking.get('children', 0) or 0
                     
-                    # Improved guest name handling
                     guest_name = (f"{booking.get('firstname', '')} {booking.get('lastname', '')}".strip() or
                                   booking.get('guest-name', '') or
                                   "Unknown Guest")
                     
-                    # Improved total price handling
                     total_price = booking.get('total-amount') or booking.get('price') or 0
                     if isinstance(total_price, str):
                         try:
@@ -65,8 +63,10 @@ class SmoobuAPI:
                         'status': booking.get('status', 'Unknown'),
                         'type': booking.get('type', 'Unknown'),
                         'phone_number': booking.get('phone', 'N/A'),
-                        'assistance_notes': booking.get('notice', '') or booking.get('assistant-notice', '') or 'N/A',
-                        'language': booking.get('language', 'N/A')
+                        'notice': booking.get('notice', ''),
+                        'assistantNotice': booking.get('assistant-notice', ''),
+                        'language': booking.get('language', 'N/A'),
+                        'channel_name': booking.get('channel', {}).get('name', 'N/A')
                     })
                 logger.debug(f"Processed {len(bookings)} bookings")
                 return bookings, None
