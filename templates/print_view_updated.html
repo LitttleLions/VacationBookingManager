@@ -4,54 +4,66 @@
 
 {% block content %}
 <div class="print-container">
-    <h2>{{ _('Print View - Bookings') }}</h2>
+    <h2 class="print-title">{{ _('Print View - Bookings') }}</h2>
     
     <form method="GET" action="{{ url_for('print_view') }}" class="filter-form">
-        <input type="text" name="guest_filter" placeholder="{{ _('Filter by guest name') }}" value="{{ guest_filter }}">
-        <select name="apartment_filter">
-            <option value="">{{ _('All Apartments') }}</option>
-            {% for apartment in apartments %}
-            <option value="{{ apartment }}" {% if apartment_filter == apartment %}selected{% endif %}>{{ apartment }}</option>
-            {% endfor %}
-        </select>
-        <input type="date" name="start_date_filter" value="{{ start_date_filter }}" placeholder="{{ _('Start Date') }}">
-        <input type="date" name="end_date_filter" value="{{ end_date_filter }}" placeholder="{{ _('End Date') }}">
-        <button type="submit">{{ _('Filter') }}</button>
+        <div class="form-group">
+            <input type="text" name="guest_filter" placeholder="{{ _('Filter by guest name') }}" value="{{ guest_filter }}">
+        </div>
+        <div class="form-group">
+            <select name="apartment_filter">
+                <option value="">{{ _('All Apartments') }}</option>
+                {% for apartment in apartments %}
+                <option value="{{ apartment }}" {% if apartment_filter == apartment %}selected{% endif %}>{{ apartment }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <input type="date" name="start_date_filter" value="{{ start_date_filter }}" placeholder="{{ _('Start Date') }}">
+        </div>
+        <div class="form-group">
+            <input type="date" name="end_date_filter" value="{{ end_date_filter }}" placeholder="{{ _('End Date') }}">
+        </div>
+        <div class="form-group">
+            <button type="submit">{{ _('Filter') }}</button>
+        </div>
     </form>
 
     {% if bookings %}
-    <table class="print-table">
-        <thead>
-            <tr>
-                <th>{{ _('Guest Name') }}</th>
-                <th>{{ _('Apartment Name') }}</th>
-                <th>{{ _('Check-in') }}</th>
-                <th>{{ _('Check-out') }}</th>
-                <th>{{ _('Guests') }}</th>
-                <th>{{ _('Total Price') }}</th>
-                <th>{{ _('Channel Name') }}</th>
-                <th>{{ _('Assistant Notice') }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for booking in bookings %}
-            {% if booking.guest_name != "Unknown Guest" %}
-            <tr>
-                <td>{{ booking.guest_name }}</td>
-                <td>{{ booking.apartment_name }}</td>
-                <td>{{ booking.check_in }}</td>
-                <td>{{ booking.check_out }}</td>
-                <td>{{ booking.guests }}</td>
-                <td>{{ booking.total_price }}</td>
-                <td>{{ booking.channel_name }}</td>
-                <td>{{ booking.assistantNotice }}</td>
-            </tr>
-            {% endif %}
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th>{{ _('Guest Name') }}</th>
+                    <th>{{ _('Apartment Name') }}</th>
+                    <th>{{ _('Check-in') }}</th>
+                    <th>{{ _('Check-out') }}</th>
+                    <th>{{ _('Guests') }}</th>
+                    <th>{{ _('Total Price') }}</th>
+                    <th>{{ _('Channel Name') }}</th>
+                    <th>{{ _('Assistant Notice') }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                {% if booking.guest_name != "Unknown Guest" %}
+                <tr>
+                    <td>{{ booking.guest_name }}</td>
+                    <td>{{ booking.apartment_name }}</td>
+                    <td>{{ booking.check_in }}</td>
+                    <td>{{ booking.check_out }}</td>
+                    <td>{{ booking.guests }}</td>
+                    <td>{{ booking.total_price }}</td>
+                    <td>{{ booking.channel_name }}</td>
+                    <td>{{ booking.assistantNotice }}</td>
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     {% else %}
-    <p>{{ _('No bookings available.') }}</p>
+    <p class="no-bookings">{{ _('No bookings available.') }}</p>
     {% endif %}
 </div>
 {% endblock %}

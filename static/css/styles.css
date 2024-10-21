@@ -72,13 +72,20 @@ nav ul li a:hover {
 
 .filter-form {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 20px;
+}
+
+.form-group {
+    flex: 1;
+    min-width: 200px;
 }
 
 .filter-form input,
 .filter-form select,
 .filter-form button {
+    width: 100%;
     padding: 8px 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -240,22 +247,6 @@ nav ul li a:hover {
     background-color: #ffe0b2;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
-    .filter-form {
-        flex-direction: column;
-    }
-
-    .calendar-table {
-        font-size: 13px;
-    }
-
-    .calendar-cell {
-        height: auto;
-        max-height: 150px;
-    }
-}
-
 /* Booking list table styles */
 #bookingTable {
     width: 100%;
@@ -287,4 +278,103 @@ nav ul li a:hover {
 
 #bookingTable tr:hover {
     background-color: #fff5e6;
+}
+
+/* Print View Styles */
+.print-container {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-top: 20px;
+}
+
+.print-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #e67e22;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+.print-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.print-table th,
+.print-table td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.print-table th {
+    background-color: #f8f8f8;
+    font-weight: 700;
+    color: #e67e22;
+}
+
+.print-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.print-table tr:hover {
+    background-color: #fff5e6;
+}
+
+.no-bookings {
+    text-align: center;
+    font-size: 18px;
+    color: #666;
+    margin-top: 20px;
+}
+
+@media print {
+    .filter-form,
+    header,
+    nav {
+        display: none;
+    }
+
+    .print-container {
+        box-shadow: none;
+    }
+
+    .print-table {
+        font-size: 12px;
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .filter-form {
+        flex-direction: column;
+    }
+
+    .form-group {
+        width: 100%;
+    }
+
+    .calendar-table {
+        font-size: 13px;
+    }
+
+    .calendar-cell {
+        height: auto;
+        max-height: 150px;
+    }
+
+    .print-table {
+        font-size: 14px;
+    }
+
+    .print-table th,
+    .print-table td {
+        padding: 8px;
+    }
 }
