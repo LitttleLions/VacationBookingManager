@@ -228,6 +228,11 @@ nav ul li a:hover {
     font-weight: 700;
 }
 
+/* Highlight current day */
+.today {
+    background-color: #ffe0b2;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .filter-form {
