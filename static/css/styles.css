@@ -252,3 +252,8 @@ nav ul li a:hover {
         max-height: 150px;
     }
 }
+
+/* Booking list table styles */
+#bookingTable td {
+    font-size: 15px; /* Increased by 1px */
+}
