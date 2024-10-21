@@ -41,31 +41,29 @@
             </thead>
             <tbody>
                 {% for apartment in apartments %}
+                {% if calendar_data.get(apartment) and calendar_data[apartment]|length > 0 %}
                 <tr>
                     <td class="apartment-name">{{ apartment }}</td>
                     {% for date in week_dates %}
                     <td class="calendar-cell {% if date.date() == today %}current-day{% endif %}">
                         {% for booking in calendar_data[apartment].get(date, []) %}
-                        {% set booking_start = datetime.strptime(booking.check_in, '%Y-%m-%d').date() %}
-                        {% set booking_end = datetime.strptime(booking.check_out, '%Y-%m-%d').date() %}
-                        {% set is_start = booking_start == date.date() %}
-                        {% set is_end = booking_end == date.date() %}
-                        {% set is_middle = booking_start < date.date() and booking_end > date.date() %}
-                        {% set colspan = (booking_end - booking_start).days %}
-                        {% if is_start or is_middle %}
-                        <div class="booking-item {% if is_start %}booking-start{% elif is_middle %}booking-middle{% elif is_end %}booking-end{% endif %}"
-                             style="{% if is_start %}grid-column: span {{ colspan }};{% endif %}"
-                             data-booking='{{ booking|tojson|forceescape }}'>
+                        <div class="booking-item" data-booking='{{ booking|tojson|forceescape }}'>
                             <div class="booking-guest">{{ booking.guest_name }}</div>
-                            <div class="booking-dates">
-                                {{ booking.check_in }} - {{ booking.check_out }}
+                            <div class="booking-details">
+                                <div>{{ _('Check-in') }}: {{ booking.check_in }}</div>
+                                <div>{{ _('Check-out') }}: {{ booking.check_out }}</div>
+                                <div>{{ _('Guests') }}: {{ booking.guests }}</div>
+                                <div>{{ _('Phone') }}: {{ booking.phone_number }}</div>
+                                {% if booking.assistantNotice %}
+                                <div>{{ _('Assistant Notice') }}: {{ booking.assistantNotice }}</div>
+                                {% endif %}
                             </div>
                         </div>
-                        {% endif %}
                         {% endfor %}
                     </td>
                     {% endfor %}
                 </tr>
+                {% endif %}
                 {% endfor %}
             </tbody>
         </table>

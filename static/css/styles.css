@@ -136,9 +136,7 @@ nav ul li a:hover {
 
 .calendar-table {
     width: 100%;
-    border-collapse: separate;
-    border-spacing: 0;
-    table-layout: fixed;
+    border-collapse: collapse;
 }
 
 .calendar-table th,
@@ -174,26 +172,18 @@ nav ul li a:hover {
 }
 
 .calendar-cell {
-    height: 100px;
-    position: relative;
-    overflow: visible;
+    height: 140px;
+    overflow-y: auto;
 }
 
 .booking-item {
     background-color: #fff5e6;
-    border: 1px solid #e67e22;
     border-radius: 4px;
-    padding: 4px;
-    margin-bottom: 2px;
-    font-size: 12px;
+    padding: 8px;
+    margin-bottom: 5px;
+    font-size: 15px;
     cursor: pointer;
     transition: background-color 0.3s;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    height: 100%;
 }
 
 .booking-item:hover {
@@ -202,30 +192,12 @@ nav ul li a:hover {
 
 .booking-guest {
     font-weight: 700;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    margin-bottom: 5px;
 }
 
-.booking-dates {
-    font-size: 10px;
-    color: #666;
-}
-
-.booking-start {
-    border-left: 4px solid #4CAF50;
-    margin-left: -1px;
-}
-
-.booking-middle {
-    border-left: none;
-    border-right: none;
-    border-radius: 0;
-}
-
-.booking-end {
-    border-right: 4px solid #F44336;
-    margin-right: -1px;
+.booking-details {
+    color: #222;
+    font-size: 14px;
 }
 
 /* Tooltip styles */
@@ -238,13 +210,13 @@ nav ul li a:hover {
     padding: 12px;
     max-width: 300px;
     z-index: 1000;
-    font-size: 14px;
+    font-size: 16px;
     line-height: 1.4;
 }
 
 .booking-tooltip h3 {
     margin: 0 0 10px 0;
-    font-size: 16px;
+    font-size: 18px;
     font-weight: 700;
     color: #e67e22;
 }
@@ -260,6 +232,11 @@ nav ul li a:hover {
 
 /* Highlight current day */
 .current-day {
+    background-color: #ffe0b2 !important;
+    border: 2px solid #e67e22 !important;
+}
+
+.calendar-table .current-day {
     background-color: #ffe0b2;
 }
 
@@ -270,11 +247,12 @@ nav ul li a:hover {
     }
 
     .calendar-table {
-        font-size: 12px;
+        font-size: 13px;
     }
 
     .calendar-cell {
-        height: 80px;
+        height: auto;
+        max-height: 150px;
     }
 }
 
@@ -299,7 +277,7 @@ nav ul li a:hover {
 }
 
 #bookingTable td {
-    font-size: 14px;
+    font-size: 15px;
     color: #222;
 }
 
