@@ -17,7 +17,11 @@ document.addEventListener('DOMContentLoaded', function() {
             <p><strong>Check-out:</strong> ${bookingData.check_out || 'N/A'}</p>
             <p><strong>Guests:</strong> ${bookingData.guests || 'N/A'}</p>
             <p><strong>Phone:</strong> ${bookingData.phone_number || 'N/A'}</p>
+            <p><strong>Email:</strong> ${bookingData.email || 'N/A'}</p>
+            <p><strong>Adults:</strong> ${bookingData.adults || '0'}</p>
+            <p><strong>Children:</strong> ${bookingData.children || '0'}</p>
             <p><strong>Language:</strong> ${bookingData.language || 'N/A'}</p>
+            <p><strong>Channel:</strong> ${bookingData.channel_name || 'N/A'}</p>
             <p><strong>Assistant Notice:</strong> ${bookingData.assistantNotice || 'N/A'}</p>
         `;
         return tooltip;
