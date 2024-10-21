@@ -138,6 +138,7 @@ nav ul li a:hover {
     width: 100%;
     border-collapse: separate;
     border-spacing: 0;
+    table-layout: fixed;
 }
 
 .calendar-table th,
@@ -187,7 +188,12 @@ nav ul li a:hover {
     font-size: 12px;
     cursor: pointer;
     transition: background-color 0.3s;
-    position: relative;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    height: 100%;
 }
 
 .booking-item:hover {
@@ -199,6 +205,11 @@ nav ul li a:hover {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.booking-dates {
+    font-size: 10px;
+    color: #666;
 }
 
 .booking-start {

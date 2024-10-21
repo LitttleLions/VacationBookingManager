@@ -77,5 +77,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Adjust booking items for multi-day display
+    const bookingItems = document.querySelectorAll('.booking-item');
+    bookingItems.forEach(item => {
+        const startDate = new Date(item.dataset.start);
+        const endDate = new Date(item.dataset.end);
+        const daysDiff = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24));
+        
+        if (daysDiff > 1) {
+            item.style.width = `calc(${daysDiff * 100}% + ${(daysDiff - 1) * 2}px)`;
+        }
+    });
+
     console.log('Calendar view initialization completed');
 });

@@ -51,10 +51,17 @@
                         {% set is_start = booking_start == date.date() %}
                         {% set is_end = booking_end == date.date() %}
                         {% set is_middle = booking_start < date.date() and booking_end > date.date() %}
-                        <div class="booking-item {% if is_start %}booking-start{% elif is_end %}booking-end{% elif is_middle %}booking-middle{% endif %}"
+                        {% set colspan = (booking_end - booking_start).days %}
+                        {% if is_start or is_middle %}
+                        <div class="booking-item {% if is_start %}booking-start{% elif is_middle %}booking-middle{% elif is_end %}booking-end{% endif %}"
+                             style="{% if is_start %}grid-column: span {{ colspan }};{% endif %}"
                              data-booking='{{ booking|tojson|forceescape }}'>
                             <div class="booking-guest">{{ booking.guest_name }}</div>
+                            <div class="booking-dates">
+                                {{ booking.check_in }} - {{ booking.check_out }}
+                            </div>
                         </div>
+                        {% endif %}
                         {% endfor %}
                     </td>
                     {% endfor %}
