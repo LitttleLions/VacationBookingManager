@@ -173,59 +173,48 @@ nav ul li a:hover {
 }
 
 .calendar-cell {
-    height: 140px;
-    overflow: visible;
+    height: 100px;
     position: relative;
+    overflow: visible;
 }
 
 .booking-item {
     background-color: #fff5e6;
+    border: 1px solid #e67e22;
     border-radius: 4px;
-    padding: 8px;
-    margin-bottom: 5px;
-    font-size: 15px;
+    padding: 4px;
+    margin-bottom: 2px;
+    font-size: 12px;
     cursor: pointer;
     transition: background-color 0.3s;
+    position: relative;
 }
 
 .booking-item:hover {
     background-color: #fff0d1;
 }
 
-.multi-day-booking {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 10;
-    border: 1px solid #e67e22;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
 .booking-guest {
     font-weight: 700;
-    margin-bottom: 5px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
 }
 
-.booking-details {
-    color: #222;
-    font-size: 14px;
-    display: none;
+.booking-start {
+    border-left: 4px solid #4CAF50;
+    margin-left: -1px;
 }
 
-.booking-item:hover .booking-details {
-    display: block;
-    position: absolute;
-    background-color: #fff;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    padding: 10px;
-    z-index: 20;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.booking-middle {
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+}
+
+.booking-end {
+    border-right: 4px solid #F44336;
+    margin-right: -1px;
 }
 
 /* Tooltip styles */
@@ -238,13 +227,13 @@ nav ul li a:hover {
     padding: 12px;
     max-width: 300px;
     z-index: 1000;
-    font-size: 16px;
+    font-size: 14px;
     line-height: 1.4;
 }
 
 .booking-tooltip h3 {
     margin: 0 0 10px 0;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 700;
     color: #e67e22;
 }
@@ -260,11 +249,6 @@ nav ul li a:hover {
 
 /* Highlight current day */
 .current-day {
-    background-color: #ffe0b2 !important;
-    border: 2px solid #e67e22 !important;
-}
-
-.calendar-table .current-day {
     background-color: #ffe0b2;
 }
 
@@ -275,12 +259,11 @@ nav ul li a:hover {
     }
 
     .calendar-table {
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .calendar-cell {
-        height: auto;
-        max-height: 150px;
+        height: 80px;
     }
 }
 
@@ -305,7 +288,7 @@ nav ul li a:hover {
 }
 
 #bookingTable td {
-    font-size: 15px;
+    font-size: 14px;
     color: #222;
 }
 

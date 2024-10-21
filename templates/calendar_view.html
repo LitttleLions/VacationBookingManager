@@ -41,7 +41,6 @@
             </thead>
             <tbody>
                 {% for apartment in apartments %}
-                {% if calendar_data.get(apartment) and calendar_data[apartment]|length > 0 %}
                 <tr>
                     <td class="apartment-name">{{ apartment }}</td>
                     {% for date in week_dates %}
@@ -49,28 +48,17 @@
                         {% for booking in calendar_data[apartment].get(date, []) %}
                         {% set booking_start = datetime.strptime(booking.check_in, '%Y-%m-%d').date() %}
                         {% set booking_end = datetime.strptime(booking.check_out, '%Y-%m-%d').date() %}
-                        {% set start_index = week_dates.index(date) if booking_start <= date.date() else 0 %}
-                        {% set end_index = week_dates.index(week_dates[-1]) if booking_end > week_dates[-1].date() else week_dates.index(date) %}
-                        {% set colspan = end_index - start_index + 1 %}
-                        {% if loop.first or booking != calendar_data[apartment].get(week_dates[loop.index0 - 1], [])[-1] %}
-                        <div class="booking-item multi-day-booking" data-booking='{{ booking|tojson|forceescape }}' style="grid-column: span {{ colspan }};">
+                        {% set is_start = booking_start == date.date() %}
+                        {% set is_end = booking_end == date.date() %}
+                        {% set is_middle = booking_start < date.date() and booking_end > date.date() %}
+                        <div class="booking-item {% if is_start %}booking-start{% elif is_end %}booking-end{% elif is_middle %}booking-middle{% endif %}"
+                             data-booking='{{ booking|tojson|forceescape }}'>
                             <div class="booking-guest">{{ booking.guest_name }}</div>
-                            <div class="booking-details">
-                                <div>{{ _('Check-in') }}: {{ booking.check_in }}</div>
-                                <div>{{ _('Check-out') }}: {{ booking.check_out }}</div>
-                                <div>{{ _('Guests') }}: {{ booking.guests }}</div>
-                                <div>{{ _('Phone') }}: {{ booking.phone_number }}</div>
-                                {% if booking.assistantNotice %}
-                                <div>{{ _('Assistant Notice') }}: {{ booking.assistantNotice }}</div>
-                                {% endif %}
-                            </div>
                         </div>
-                        {% endif %}
                         {% endfor %}
                     </td>
                     {% endfor %}
                 </tr>
-                {% endif %}
                 {% endfor %}
             </tbody>
         </table>

@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const container = document.querySelector('.container');
+    const container = document.querySelector('.calendar-container');
     if (!container) {
-        console.error('Container element not found');
+        console.error('Calendar container element not found');
         return;
     }
 
@@ -16,11 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <p><strong>Check-in:</strong> ${bookingData.check_in || 'N/A'}</p>
             <p><strong>Check-out:</strong> ${bookingData.check_out || 'N/A'}</p>
             <p><strong>Guests:</strong> ${bookingData.guests || 'N/A'}</p>
-            <p><strong>Adults:</strong> ${bookingData.adults || '0'}</p>
-            <p><strong>Children:</strong> ${bookingData.children || '0'}</p>
             <p><strong>Phone:</strong> ${bookingData.phone_number || 'N/A'}</p>
-            <p><strong>Email:</strong> ${bookingData.email || 'N/A'}</p>
-            <p><strong>Language:</strong> ${bookingData.language || 'N/A'}</p>
             <p><strong>Channel:</strong> ${bookingData.channel_name || 'N/A'}</p>
             <p><strong>Assistant Notice:</strong> ${bookingData.assistantNotice || 'N/A'}</p>
         `;
@@ -43,7 +39,6 @@ document.addEventListener('DOMContentLoaded', function() {
             top = y - rect.height - 10;
         }
 
-        tooltip.style.position = 'fixed';
         tooltip.style.left = `${left}px`;
         tooltip.style.top = `${top}px`;
     }
@@ -57,8 +52,8 @@ document.addEventListener('DOMContentLoaded', function() {
             try {
                 const bookingData = JSON.parse(bookingItem.dataset.booking);
                 const tooltip = createTooltip(bookingData);
-                positionTooltip(tooltip, e.clientX, e.clientY);
                 document.body.appendChild(tooltip);
+                positionTooltip(tooltip, e.clientX, e.clientY);
                 currentTooltip = tooltip;
             } catch (error) {
                 console.error('Error creating tooltip:', error);
@@ -66,8 +61,8 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    function hideTooltip(e) {
-        if (!e.target.closest('.booking-item') && currentTooltip) {
+    function hideTooltip() {
+        if (currentTooltip) {
             currentTooltip.remove();
             currentTooltip = null;
         }
@@ -82,5 +77,5 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    console.log('JavaScript initialization completed');
+    console.log('Calendar view initialization completed');
 });
