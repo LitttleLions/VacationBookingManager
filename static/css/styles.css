@@ -196,7 +196,7 @@ nav ul li a:hover {
 }
 
 .booking-details {
-    color: #666;
+    color: #222;
     font-size: 14px;
 }
 
@@ -227,12 +227,13 @@ nav ul li a:hover {
 
 .booking-tooltip strong {
     font-weight: 700;
-    color: #444;
+    color: #222;
 }
 
 /* Highlight current day */
 .current-day {
     background-color: #ffe0b2 !important;
+    border: 2px solid #e67e22 !important;
 }
 
 .calendar-table .current-day {
@@ -277,7 +278,7 @@ nav ul li a:hover {
 
 #bookingTable td {
     font-size: 15px;
-    color: #333; /* Increased font color darkness */
+    color: #222;
 }
 
 #bookingTable tr:nth-child(even) {
