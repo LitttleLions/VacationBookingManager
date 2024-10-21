@@ -47,7 +47,13 @@
                     {% for date in week_dates %}
                     <td class="calendar-cell {% if date.date() == today %}current-day{% endif %}">
                         {% for booking in calendar_data[apartment].get(date, []) %}
-                        <div class="booking-item" data-booking='{{ booking|tojson|forceescape }}'>
+                        {% set booking_start = datetime.strptime(booking.check_in, '%Y-%m-%d').date() %}
+                        {% set booking_end = datetime.strptime(booking.check_out, '%Y-%m-%d').date() %}
+                        {% set start_index = week_dates.index(date) if booking_start <= date.date() else 0 %}
+                        {% set end_index = week_dates.index(week_dates[-1]) if booking_end > week_dates[-1].date() else week_dates.index(date) %}
+                        {% set colspan = end_index - start_index + 1 %}
+                        {% if loop.first or booking != calendar_data[apartment].get(week_dates[loop.index0 - 1], [])[-1] %}
+                        <div class="booking-item multi-day-booking" data-booking='{{ booking|tojson|forceescape }}' style="grid-column: span {{ colspan }};">
                             <div class="booking-guest">{{ booking.guest_name }}</div>
                             <div class="booking-details">
                                 <div>{{ _('Check-in') }}: {{ booking.check_in }}</div>
@@ -59,6 +65,7 @@
                                 {% endif %}
                             </div>
                         </div>
+                        {% endif %}
                         {% endfor %}
                     </td>
                     {% endfor %}

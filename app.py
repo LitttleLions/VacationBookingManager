@@ -94,10 +94,10 @@ def calendar_view():
             (not start_date_filter or booking['check_out'] >= start_date_filter) and
             (not end_date_filter or booking['check_in'] <= end_date_filter) and
             booking['guest_name'] != "Unknown Guest"):
-            check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d')
-            check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d')
+            check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d').date()
+            check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d').date()
             for date in week_dates:
-                if check_in <= date < check_out:
+                if check_in <= date.date() < check_out:
                     calendar_data[booking['apartment_name']][date].append(booking)
 
     apartments_with_bookings = [apartment for apartment in apartments if any(calendar_data[apartment].values())]
@@ -119,7 +119,8 @@ def calendar_view():
                            apartment_filter=apartment_filter,
                            start_date_filter=start_date_filter,
                            end_date_filter=end_date_filter,
-                           today=today)
+                           today=today,
+                           datetime=datetime)
 
 @app.route('/print')
 def print_view():

@@ -136,7 +136,8 @@ nav ul li a:hover {
 
 .calendar-table {
     width: 100%;
-    border-collapse: collapse;
+    border-collapse: separate;
+    border-spacing: 0;
 }
 
 .calendar-table th,
@@ -173,7 +174,8 @@ nav ul li a:hover {
 
 .calendar-cell {
     height: 140px;
-    overflow-y: auto;
+    overflow: visible;
+    position: relative;
 }
 
 .booking-item {
@@ -190,14 +192,40 @@ nav ul li a:hover {
     background-color: #fff0d1;
 }
 
+.multi-day-booking {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    border: 1px solid #e67e22;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .booking-guest {
     font-weight: 700;
     margin-bottom: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .booking-details {
     color: #222;
     font-size: 14px;
+    display: none;
+}
+
+.booking-item:hover .booking-details {
+    display: block;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px;
+    z-index: 20;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Tooltip styles */
