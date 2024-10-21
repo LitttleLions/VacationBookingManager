@@ -181,7 +181,7 @@ nav ul li a:hover {
     border-radius: 4px;
     padding: 8px;
     margin-bottom: 5px;
-    font-size: 14px;
+    font-size: 15px;  /* Increased by 1px */
     cursor: pointer;
     transition: background-color 0.3s;
 }
@@ -197,7 +197,7 @@ nav ul li a:hover {
 
 .booking-details {
     color: #666;
-    font-size: 13px;
+    font-size: 14px;  /* Increased by 1px */
 }
 
 /* Tooltip styles */

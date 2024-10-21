@@ -28,6 +28,27 @@ class SmoobuAPI:
             'limit': limit
         }
         
+        all_bookings = []
+        page = 1
+
+        while True:
+            params['page'] = page
+            bookings, error = self._fetch_bookings(params, max_retries, initial_delay)
+            
+            if error:
+                return [], error
+
+            all_bookings.extend(bookings)
+            
+            if len(bookings) < limit:
+                break
+            
+            page += 1
+
+        logger.debug(f"Retrieved a total of {len(all_bookings)} bookings")
+        return all_bookings, None
+
+    def _fetch_bookings(self, params, max_retries, initial_delay):
         for attempt in range(max_retries):
             try:
                 url = f"{self.BASE_URL}/reservations"
