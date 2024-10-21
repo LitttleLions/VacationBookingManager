@@ -18,13 +18,14 @@ class SmoobuAPI:
             'Accept': 'application/json'
         }
 
-    def get_bookings(self, max_retries=3, initial_delay=1):
+    def get_bookings(self, max_retries=3, initial_delay=1, limit=1000):
         logger.debug("Entering get_bookings method")
         start_date = datetime.now()
-        end_date = start_date + timedelta(weeks=4)
+        end_date = start_date + timedelta(weeks=52)  # Fetch bookings for a full year
         params = {
             'from': start_date.strftime('%Y-%m-%d'),
-            'to': end_date.strftime('%Y-%m-%d')
+            'to': end_date.strftime('%Y-%m-%d'),
+            'limit': limit
         }
         
         for attempt in range(max_retries):
@@ -79,8 +80,8 @@ class SmoobuAPI:
                 else:
                     error_message = f"Error fetching bookings after {max_retries} attempts: {str(e)}"
                     if hasattr(e, 'response'):
-                        error_message += f"\nResponse status code: {e.response.status_code}"
-                        error_message += f"\nResponse content: {e.response.text[:500]}..."
+                        error_message += f"\nResponse status code: {e.response.status_code if e.response else 'No status code'}"
+                        error_message += f"\nResponse content: {e.response.text[:500] if e.response else 'No response content'}..."
                     else:
                         error_message += "\nNo response object available"
                     logger.error(error_message)
