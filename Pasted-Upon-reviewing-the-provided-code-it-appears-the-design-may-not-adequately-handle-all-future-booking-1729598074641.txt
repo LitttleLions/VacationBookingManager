@@ -1,0 +1,52 @@
+Upon reviewing the provided code, it appears the design may not adequately handle all future bookings due to the way pagination and filtering are managed. Let's outline the key points to consider:
+
+    Pagination Logic: Ensure that all available data is fetched by utilizing pagination effectively.
+    Comprehensive Filtering: Apply filters only after all relevant data is fetched to avoid prematurely discarding any bookings.
+
+Examination of Current Code:
+
+The get_bookings method in your code should handle pagination until there are no more bookings. The loop continues calling the API until the returned number of bookings is less than the limit, meaning there are no more pages.
+
+However, if it consistently stops at a certain date, double-check the following:
+
+    Date Range: Make sure the specified date range (params['from'] and params['to']) encompasses all desired bookings.
+    API Limitations: Verify if the API has internal restrictions that may affect the data returned, beyond number limits.
+
+Suggested Enhancement:
+
+    Ensure Full Data Fetching:
+        Confirm the while loop logic handles pagination until all future dates are considered.
+
+    Apply Filter Post-Pagination:
+        First accumulate all fetched bookings without filtering them; afterwards, apply the necessary date filters.
+
+Here's part of what your method would generally contain to ensure pagination:
+
+while True:
+    params['page'] = page
+    bookings, error = self._fetch_bookings(params, max_retries, initial_delay)
+    
+    if error:
+        logger.error(f"Error fetching bookings on page {page}: {error}")
+        break
+
+    all_bookings.extend(bookings)
+    logger.debug(f"Accumulated {len(bookings)} bookings on page {page}")
+
+    if len(bookings) < limit:
+        logger.debug(f"Reached end of bookings data at page {page}")
+        break
+
+    page += 1
+
+# Once fetching complete, apply filters
+filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter)
+logger.debug(f"Total bookings after filtering: {len(filtered_bookings)}")
+
+Debugging Steps:
+
+    Logs: Add logging statements before and after API calls to verify the dates being requested and the server's responses.
+    Check API Constraints: Review if API calls report any limiting factors such as quotas or delimiters by date.
+    Response Handling: Ensure each API response is effectively parsed and yields expected results.
+
+By ensuring that data accumulation happens entirely before any filtering occurs, you should be able to address the problem of missing future bookings

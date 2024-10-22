@@ -18,7 +18,7 @@ class SmoobuAPI:
             'Accept': 'application/json'
         }
 
-    def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1, limit=100):
+    def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1, limit=500):
         logger.debug("Entering get_bookings method")
         
         # Set date range (current date to 3 years in the future)
@@ -84,20 +84,29 @@ class SmoobuAPI:
         filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
         logger.debug(f"Total bookings after filtering: {len(filtered_bookings)}")
 
+        # Check if we might be missing bookings due to API limitations
+        if filtered_bookings and filtered_bookings[-1]['check_out'] == end_date.strftime('%Y-%m-%d'):
+            logger.warning("The last booking's check-out date matches the end date of our query. We might be missing future bookings.")
+
         return filtered_bookings, None
 
     def _apply_filters(self, bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter):
         filtered = []
         for booking in bookings:
             if guest_filter and guest_filter.lower() not in booking['guest_name'].lower():
+                logger.debug(f"Filtered out booking for {booking['guest_name']} due to guest filter")
                 continue
             if apartment_filter and apartment_filter.lower() != booking['apartment_name'].lower():
+                logger.debug(f"Filtered out booking for {booking['apartment_name']} due to apartment filter")
                 continue
             if start_date_filter and booking['check_out'] < start_date_filter:
+                logger.debug(f"Filtered out booking with check-out {booking['check_out']} due to start date filter")
                 continue
             if end_date_filter and booking['check_in'] > end_date_filter:
+                logger.debug(f"Filtered out booking with check-in {booking['check_in']} due to end date filter")
                 continue
             if booking['guest_name'].lower() == "unknown guest":
+                logger.debug("Filtered out booking with 'Unknown Guest'")
                 continue
             filtered.append(booking)
         return filtered
