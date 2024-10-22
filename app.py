@@ -31,6 +31,10 @@ def booking_list():
         bookings = []
     else:
         logger.debug(f"Retrieved {len(bookings)} bookings from Smoobu API")
+        if bookings:
+            earliest_date = min(booking['check_in'] for booking in bookings)
+            latest_date = max(booking['check_out'] for booking in bookings)
+            logger.debug(f"Date range of bookings: from {earliest_date} to {latest_date}")
 
     guest_filter = request.args.get('guest_filter', '').lower()
     apartment_filter = request.args.get('apartment_filter', '').lower()
