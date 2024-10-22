@@ -36,7 +36,7 @@ class SmoobuAPI:
         params = {
             'from': start_date.strftime('%Y-%m-%d'),
             'to': end_date.strftime('%Y-%m-%d'),
-            'limit': 100  # Explicitly set the limit to 100
+            'limit': 500  # Increased limit to 500
         }
         
         all_bookings = []
@@ -174,4 +174,5 @@ class SmoobuAPI:
     # Add more API methods as needed
 
 # Note: Check API documentation for any constraints on the limit parameter.
-# The current implementation uses a limit of 100 bookings per page.
+# The current implementation uses a limit of 500 bookings per page.
+# If the API has a lower limit, adjust the 'limit' parameter in the get_bookings method accordingly.
