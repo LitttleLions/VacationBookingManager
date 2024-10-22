@@ -59,6 +59,12 @@ class SmoobuAPI:
             all_bookings.extend(bookings)
             logger.debug(f"Retrieved {len(bookings)} bookings on page {page}")
             
+            # Log the earliest and latest dates of bookings in this response
+            if bookings:
+                earliest_date = min(booking['check_in'] for booking in bookings)
+                latest_date = max(booking['check_out'] for booking in bookings)
+                logger.debug(f"Date range of bookings on page {page}: from {earliest_date} to {latest_date}")
+            
             if len(bookings) < limit:
                 logger.debug(f"Reached last page of results on page {page}")
                 break
@@ -68,11 +74,11 @@ class SmoobuAPI:
         logger.debug(f"Total API calls made: {total_api_calls}")
         logger.debug(f"Retrieved a total of {len(all_bookings)} bookings before filtering")
 
-        # Log the date range of fetched bookings
+        # Log the date range of all fetched bookings
         if all_bookings:
             earliest_date = min(booking['check_in'] for booking in all_bookings)
             latest_date = max(booking['check_out'] for booking in all_bookings)
-            logger.debug(f"Date range of fetched bookings: from {earliest_date} to {latest_date}")
+            logger.debug(f"Date range of all fetched bookings: from {earliest_date} to {latest_date}")
 
         # Apply filters after fetching all bookings
         filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
