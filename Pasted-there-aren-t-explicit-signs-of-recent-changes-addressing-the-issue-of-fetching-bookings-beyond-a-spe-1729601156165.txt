@@ -1,0 +1,31 @@
+there aren't explicit signs of recent changes addressing the issue of fetching bookings beyond a specific future date such as after November 2024. The approach still broadly hinges on correctly implementing pagination and filtering.
+
+However, let's recap the potential adjustments or insights to ensure that the functionality covers future dates effectively:
+
+    Pagination Logic: The while loop correctly continues fetching pages until no more bookings are found.
+
+    Date Range Handling: The max date range is set to 5 years into the future (timedelta(days=1825)), which should be ample to include far-future bookings unless there is a different imposed limit on the API side.
+
+    Filtering Post-Fetch: Filters are correctly applied after fetching to prevent prematurely excluding any bookings due to dates.
+
+Points of Consideration
+
+    Logging Enhancements: Ensure logs have enough detail to confirm received data matches the expected date ranges. This will assist in identifying if the API itself is not returning data beyond a certain point.
+
+    API Limitations: Double-check any external API documentation for inherent limitations or recent updates that might cap results or date spans inadvertently.
+
+    Validation and Testing: Conduct thorough testing by simulating border cases where bookings should fall post-expected dates (like manual checks or mocked responses).
+
+Here is a quick reinforcement of what our fetching function should log and check:
+
+logger.debug(f"Final accumulated bookings count: {len(all_bookings)}")
+if all_bookings:
+    logger.debug(f"Earliest booking date: {min(b['check_in'] for b in all_bookings)}")
+    logger.debug(f"Latest booking date: {max(b['check_out'] for b in all_bookings)}")
+
+Recommendations
+
+    Collaboration with API Provider: If limitations persist, direct communication with the API service (here, Smoobu) might be invaluable to understand any date constraints or known issues.
+    Enhanced Monitoring: Apply scraping or diagnostics for a few weeks to spot trends or repetitious cut-offs in date fetching.
+
+The main takeaway is that there might be an external factor or configuration that could be influencing the perceived cap in data beyond your described November 2024.

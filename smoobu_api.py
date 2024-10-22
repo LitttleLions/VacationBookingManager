@@ -23,7 +23,7 @@ class SmoobuAPI:
         
         # Set date range (current date to 10 years in the future)
         start_date = datetime.now().date()
-        end_date = start_date + timedelta(days=3650)  # Increased to 10 years
+        end_date = start_date + timedelta(days=3650)  # 10 years
 
         # Apply date filters if provided
         if start_date_filter:
@@ -80,13 +80,13 @@ class SmoobuAPI:
             latest_date = max(booking['check_out'] for booking in all_bookings)
             logger.info(f"Date range of all fetched bookings: from {earliest_date} to {latest_date}")
 
+            # Check if we might be missing future bookings
+            if latest_date == end_date.strftime('%Y-%m-%d'):
+                logger.warning("The latest booking date matches the end date of our query. We might be missing future bookings.")
+
         # Apply filters after fetching all bookings
         filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
         logger.info(f"Total bookings after filtering: {len(filtered_bookings)}")
-
-        # Check if we might be missing future bookings
-        if filtered_bookings and filtered_bookings[-1]['check_out'] == end_date.strftime('%Y-%m-%d'):
-            logger.warning("The last booking's check-out date matches the end date of our query. We might be missing future bookings.")
 
         # Log the date range of filtered bookings
         if filtered_bookings:
