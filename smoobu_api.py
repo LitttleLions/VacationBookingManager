@@ -21,8 +21,10 @@ class SmoobuAPI:
     def get_bookings(self, max_retries=3, initial_delay=1, limit=1000):
         logger.debug("Entering get_bookings method")
         start_date = datetime.now()
+        end_date = start_date + timedelta(days=730)  # Fetch bookings for 2 years
         params = {
             'from': start_date.strftime('%Y-%m-%d'),
+            'to': end_date.strftime('%Y-%m-%d'),
             'limit': limit
         }
         
