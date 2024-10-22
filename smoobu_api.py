@@ -31,6 +31,8 @@ class SmoobuAPI:
         if end_date_filter:
             end_date = min(end_date, datetime.strptime(end_date_filter, '%Y-%m-%d').date())
 
+        logger.debug(f"Requesting bookings from {start_date} to {end_date}")
+
         params = {
             'from': start_date.strftime('%Y-%m-%d'),
             'to': end_date.strftime('%Y-%m-%d'),
@@ -66,19 +68,33 @@ class SmoobuAPI:
         logger.debug(f"Total API calls made: {total_api_calls}")
         logger.debug(f"Retrieved a total of {len(all_bookings)} bookings before filtering")
 
+        # Log the date range of fetched bookings
+        if all_bookings:
+            earliest_date = min(booking['check_in'] for booking in all_bookings)
+            latest_date = max(booking['check_out'] for booking in all_bookings)
+            logger.debug(f"Date range of fetched bookings: from {earliest_date} to {latest_date}")
+
         # Apply filters after fetching all bookings
-        filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter)
+        filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
         logger.debug(f"Total bookings after filtering: {len(filtered_bookings)}")
 
         return filtered_bookings, None
 
-    def _apply_filters(self, bookings, guest_filter, apartment_filter):
-        return [
-            booking for booking in bookings
-            if (not guest_filter or guest_filter.lower() in booking['guest_name'].lower()) and
-               (not apartment_filter or apartment_filter.lower() == booking['apartment_name'].lower()) and
-               booking['guest_name'].lower() != "unknown guest"
-        ]
+    def _apply_filters(self, bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter):
+        filtered = []
+        for booking in bookings:
+            if guest_filter and guest_filter.lower() not in booking['guest_name'].lower():
+                continue
+            if apartment_filter and apartment_filter.lower() != booking['apartment_name'].lower():
+                continue
+            if start_date_filter and booking['check_out'] < start_date_filter:
+                continue
+            if end_date_filter and booking['check_in'] > end_date_filter:
+                continue
+            if booking['guest_name'].lower() == "unknown guest":
+                continue
+            filtered.append(booking)
+        return filtered
 
     def _fetch_bookings(self, params, max_retries, initial_delay):
         for attempt in range(max_retries):
