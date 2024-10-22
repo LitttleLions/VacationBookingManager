@@ -18,13 +18,12 @@ class SmoobuAPI:
             'Accept': 'application/json'
         }
 
-    def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1, limit=100):
+    def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1):
         logger.debug("Entering get_bookings method")
-        logger.info(f"Using limit of {limit} bookings per page")
         
-        # Set date range (current date to 3 years in the future)
+        # Set date range (current date to 5 years in the future)
         start_date = datetime.now().date()
-        end_date = start_date + timedelta(days=1095)  # 3 years
+        end_date = start_date + timedelta(days=1825)  # 5 years
 
         # Apply date filters if provided
         if start_date_filter:
@@ -37,7 +36,7 @@ class SmoobuAPI:
         params = {
             'from': start_date.strftime('%Y-%m-%d'),
             'to': end_date.strftime('%Y-%m-%d'),
-            'limit': limit  # Now using the passed limit parameter
+            'limit': 100  # Explicitly set the limit to 100
         }
         
         all_bookings = []
@@ -46,6 +45,9 @@ class SmoobuAPI:
 
         while True:
             params['page'] = page
+            full_url = f"{self.BASE_URL}/reservations"
+            logger.info(f"Sending request to {full_url} with params: {params}")
+            
             bookings, error = self._fetch_bookings(params, max_retries, initial_delay)
             total_api_calls += 1
             
@@ -58,16 +60,10 @@ class SmoobuAPI:
                 break
 
             all_bookings.extend(bookings)
-            logger.info(f"API returned {len(bookings)} bookings out of {limit} requested")
+            logger.info(f"API returned {len(bookings)} bookings out of {params['limit']} requested")
             logger.info(f"Retrieved {len(bookings)} bookings on page {page}")
             
-            # Log the earliest and latest dates of bookings in this response
-            if bookings:
-                earliest_date = min(booking['check_in'] for booking in bookings)
-                latest_date = max(booking['check_out'] for booking in bookings)
-                logger.info(f"Date range of bookings on page {page}: from {earliest_date} to {latest_date}")
-            
-            if len(bookings) < limit:
+            if len(bookings) < params['limit']:
                 logger.debug(f"Reached last page of results on page {page}")
                 break
             
@@ -81,10 +77,6 @@ class SmoobuAPI:
             earliest_date = min(booking['check_in'] for booking in all_bookings)
             latest_date = max(booking['check_out'] for booking in all_bookings)
             logger.info(f"Date range of all fetched bookings: from {earliest_date} to {latest_date}")
-
-            # Check if we might be missing future bookings
-            if latest_date == end_date.strftime('%Y-%m-%d'):
-                logger.warning("The latest booking date matches the end date of our query. We might be missing future bookings.")
 
         # Apply filters after fetching all bookings
         filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
@@ -182,4 +174,4 @@ class SmoobuAPI:
     # Add more API methods as needed
 
 # Note: Check API documentation for any constraints on the limit parameter.
-# The current implementation uses a default limit of 100 bookings per page.
+# The current implementation uses a limit of 100 bookings per page.
