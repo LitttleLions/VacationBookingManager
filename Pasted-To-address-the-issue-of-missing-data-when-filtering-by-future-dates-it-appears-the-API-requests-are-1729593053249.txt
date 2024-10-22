@@ -1,0 +1,44 @@
+To address the issue of missing data when filtering by future dates, it appears the API requests are not fetching all the required future bookings. The current implementation seems to fetch up to a limit specified in the initial call. If that limit is reached, additional API calls are required to fetch more data until no more future bookings are available.
+
+In your existing code, the method SmoobuAPI.get_bookings() already handles pagination, but the filtering logic should also ensure it fetches bookings based on the given filters. Let's ensure that the filtering by future dates is integrated efficiently.
+Steps to fix the issue:
+
+    Increase awareness of the API limit: Confirm the limit on the number of bookings returned per call.
+    Loop through pages: Ensure you are handling multiple pages if the number of bookings exceeds the API's return limit.
+    Update filtering logic: Use filtering criteria to refetch data when necessary.
+
+Here's a general plan:
+
+    Ensure the method for fetching bookings handles pagination robustly by considering filters such as future dates.
+    Possibly re-validate the filtering implementation to incorporate refetching when necessary.
+
+Code:
+
+The following pseudo-code reflects this plan, focusing on efficiently fetching and handling future booking data:
+
+def fetch_filtered_bookings(guest_filter, apartment_filter, start_date_filter, end_date_filter):
+    page = 1
+    all_bookings = []
+
+    while True:
+        # Fetch bookings for the current page
+        bookings, error = smoobu_api.get_bookings(page=page)
+        if error:
+            logger.error("Error fetching bookings: {}".format(error))
+            break
+        
+        # Check if we have reached the end of the available data
+        if not bookings or len(bookings) < limit:
+            break
+        
+        # Filter bookings
+        relevant_bookings = filter_bookings(bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
+        all_bookings.extend(relevant_bookings)
+
+        page += 1
+
+    return all_bookings
+
+Make sure the function filter_bookings is also capable of handling the filtering of dates effectively.
+
+By ensuring that you keep fetching until you've gathered all relevant data, you should be able to cover future bookings within the required filters. This method will handle paginated results in a loop until no more pages are available or it stops receiving new data.

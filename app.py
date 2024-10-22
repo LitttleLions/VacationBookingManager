@@ -32,21 +32,26 @@ def filter_bookings(bookings, guest_filter, apartment_filter, start_date_filter,
             filtered_bookings.append(booking)
     return filtered_bookings
 
-@app.route('/')
-def booking_list():
-    logger.debug("Entering booking_list function")
+def fetch_and_filter_bookings(guest_filter='', apartment_filter='', start_date_filter='', end_date_filter=''):
     bookings, error = smoobu_api.get_bookings()
     if error:
         logger.error(f"Error fetching bookings: {error}")
-        flash(error, 'error')
-        bookings = []
-    else:
-        logger.debug(f"Retrieved {len(bookings)} bookings from Smoobu API")
-        if bookings:
-            earliest_date = min(booking['check_in'] for booking in bookings)
-            latest_date = max(booking['check_out'] for booking in bookings)
-            logger.debug(f"Date range of bookings: from {earliest_date} to {latest_date}")
+        return [], error
 
+    logger.debug(f"Retrieved {len(bookings)} bookings from Smoobu API")
+    if bookings:
+        earliest_date = min(booking['check_in'] for booking in bookings)
+        latest_date = max(booking['check_out'] for booking in bookings)
+        logger.debug(f"Date range of bookings: from {earliest_date} to {latest_date}")
+
+    filtered_bookings = filter_bookings(bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
+    logger.debug(f"Filtered bookings: {len(filtered_bookings)} out of {len(bookings)}")
+
+    return filtered_bookings, None
+
+@app.route('/')
+def booking_list():
+    logger.debug("Entering booking_list function")
     guest_filter = request.args.get('guest_filter', '')
     apartment_filter = request.args.get('apartment_filter', '')
     start_date_filter = request.args.get('start_date_filter', '')
@@ -54,11 +59,13 @@ def booking_list():
 
     logger.debug(f"Filters applied - Guest: {guest_filter}, Apartment: {apartment_filter}, Start Date: {start_date_filter}, End Date: {end_date_filter}")
 
-    apartments = sorted(set(booking['apartment_name'] for booking in bookings))
+    filtered_bookings, error = fetch_and_filter_bookings(guest_filter, apartment_filter, start_date_filter, end_date_filter)
+    if error:
+        flash(error, 'error')
+        filtered_bookings = []
 
-    filtered_bookings = filter_bookings(bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
-
-    logger.debug(f"Filtered bookings: {len(filtered_bookings)} out of {len(bookings)}")
+    all_bookings, _ = smoobu_api.get_bookings()
+    apartments = sorted(set(booking['apartment_name'] for booking in all_bookings))
 
     return render_template('booking_list.html', bookings=filtered_bookings,
                            guest_filter=guest_filter,
@@ -70,14 +77,6 @@ def booking_list():
 @app.route('/calendar')
 def calendar_view():
     logger.debug("Entering calendar_view function")
-    bookings, error = smoobu_api.get_bookings()
-    if error:
-        logger.error(f"Error fetching bookings for calendar view: {error}")
-        flash(error, 'error')
-        bookings = []
-    else:
-        logger.debug(f"Retrieved {len(bookings)} bookings for calendar view")
-
     guest_filter = request.args.get('guest_filter', '')
     apartment_filter = request.args.get('apartment_filter', '')
     start_date_filter = request.args.get('start_date_filter', '')
@@ -88,11 +87,15 @@ def calendar_view():
     week_dates = [week_start + timedelta(days=i) for i in range(7)]
     week_number = week_start.isocalendar()[1]
 
-    apartments = sorted(set(booking['apartment_name'] for booking in bookings))
+    filtered_bookings, error = fetch_and_filter_bookings(guest_filter, apartment_filter, start_date_filter, end_date_filter)
+    if error:
+        flash(error, 'error')
+        filtered_bookings = []
+
+    all_bookings, _ = smoobu_api.get_bookings()
+    apartments = sorted(set(booking['apartment_name'] for booking in all_bookings))
 
     calendar_data = {apartment: {date: [] for date in week_dates} for apartment in apartments}
-
-    filtered_bookings = filter_bookings(bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
 
     for booking in filtered_bookings:
         check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d')
@@ -125,24 +128,20 @@ def calendar_view():
 @app.route('/print')
 def print_view():
     logger.debug("Entering print_view function")
-    bookings, error = smoobu_api.get_bookings()
-    if error:
-        logger.error(f"Error fetching bookings for print view: {error}")
-        flash(error, 'error')
-        bookings = []
-    else:
-        logger.debug(f"Retrieved {len(bookings)} bookings for print view")
-
     guest_filter = request.args.get('guest_filter', '')
     apartment_filter = request.args.get('apartment_filter', '')
     start_date_filter = request.args.get('start_date_filter', '')
     end_date_filter = request.args.get('end_date_filter', '')
 
-    apartments = sorted(set(booking['apartment_name'] for booking in bookings))
+    filtered_bookings, error = fetch_and_filter_bookings(guest_filter, apartment_filter, start_date_filter, end_date_filter)
+    if error:
+        flash(error, 'error')
+        filtered_bookings = []
 
-    filtered_bookings = filter_bookings(bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
+    all_bookings, _ = smoobu_api.get_bookings()
+    apartments = sorted(set(booking['apartment_name'] for booking in all_bookings))
 
-    logger.debug(f"Filtered bookings for print view: {len(filtered_bookings)} out of {len(bookings)}")
+    logger.debug(f"Filtered bookings for print view: {len(filtered_bookings)}")
 
     return render_template('print_view_updated.html', bookings=filtered_bookings,
                            guest_filter=guest_filter,
