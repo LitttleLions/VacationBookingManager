@@ -1,0 +1,71 @@
+Given the behavior you're describing, it seems that the API call might not be effectively paginating through all available data before filtering. The system is fetching a set number of bookings, potentially filtering them too soon and missing future bookings beyond the initial page or set.
+
+Here's an approach to address the issue:
+
+    Fetch All Data First: Instead of filtering as data is retrieved, accumulate all pages of data first.
+    Filter After Fetching: Once all data has been fetched, apply the filters.
+
+Steps to Implement the Solution:
+
+    Ensure all pages are fetched: Make sure the API keeps fetching pages until no more booking data is available. This involves checking if the number of bookings returned is equal to the limit, implying there's likely more data to fetch.
+
+    Apply filters after fetching: After all data has been accumulated across all pages, apply your filtering logic.
+
+Below is an adjusted approach for the get_bookings function:
+
+def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1, limit=100):
+    logger.debug("Entering get_bookings method")
+    
+    # Set date range (current date to 2 years in the future)
+    start_date = datetime.now().date()
+    end_date = start_date + timedelta(days=730)
+
+    # Apply date filters if provided
+    if start_date_filter:
+        start_date = max(start_date, datetime.strptime(start_date_filter, '%Y-%m-%d').date())
+    if end_date_filter:
+        end_date = min(end_date, datetime.strptime(end_date_filter, '%Y-%m-%d').date())
+
+    params = {
+        'from': start_date.strftime('%Y-%m-%d'),
+        'to': end_date.strftime('%Y-%m-%d'),
+        'limit': limit
+    }
+    
+    all_bookings = []
+    page = 1
+
+    while True:
+        params['page'] = page
+        bookings, error = self._fetch_bookings(params, max_retries, initial_delay)
+        
+        if error:
+            logger.error(f"Error fetching bookings on page {page}: {error}")
+            break
+
+        if not bookings:
+            logger.debug(f"No more bookings found after page {page-1}")
+            break
+
+        all_bookings.extend(bookings)
+        logger.debug(f"Accumulated {len(bookings)} bookings on page {page}")
+
+        # Stop if this was the last full page
+        if len(bookings) < limit:
+            logger.debug(f"Reached last page of results on page {page}")
+            break
+
+        page += 1
+    
+    # Apply filters after fetching all the bookings
+    filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter)
+    logger.debug(f"Total bookings after filtering: {len(filtered_bookings)}")
+    
+    return filtered_bookings, None
+
+Key Points:
+
+    Pagination: Ensure you loop over pages until no more data is returned by checking if the return count len(bookings) < limit.
+    Filter after fetching all data: Gather all possible bookings data first, then apply your filters once fetching concludes.
+
+This revised approach should help ensure you are not missing any future bookings due to premature filtering. Ensure filters consider the full scope of the accumulated bookings.

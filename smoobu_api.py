@@ -54,11 +54,8 @@ class SmoobuAPI:
                 logger.debug(f"No more bookings found after page {page-1}")
                 break
 
-            # Apply filters
-            filtered_bookings = self._apply_filters(bookings, guest_filter, apartment_filter)
-            all_bookings.extend(filtered_bookings)
-            
-            logger.debug(f"Retrieved {len(bookings)} bookings on page {page}, {len(filtered_bookings)} after filtering")
+            all_bookings.extend(bookings)
+            logger.debug(f"Retrieved {len(bookings)} bookings on page {page}")
             
             if len(bookings) < limit:
                 logger.debug(f"Reached last page of results on page {page}")
@@ -67,8 +64,13 @@ class SmoobuAPI:
             page += 1
 
         logger.debug(f"Total API calls made: {total_api_calls}")
-        logger.debug(f"Retrieved a total of {len(all_bookings)} bookings after filtering")
-        return all_bookings, None
+        logger.debug(f"Retrieved a total of {len(all_bookings)} bookings before filtering")
+
+        # Apply filters after fetching all bookings
+        filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter)
+        logger.debug(f"Total bookings after filtering: {len(filtered_bookings)}")
+
+        return filtered_bookings, None
 
     def _apply_filters(self, bookings, guest_filter, apartment_filter):
         return [
