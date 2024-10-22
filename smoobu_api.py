@@ -18,7 +18,7 @@ class SmoobuAPI:
             'Accept': 'application/json'
         }
 
-    def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1, limit=500):
+    def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1, limit=100):
         logger.debug("Entering get_bookings method")
         logger.info(f"Using limit of {limit} bookings per page")
         
@@ -37,7 +37,7 @@ class SmoobuAPI:
         params = {
             'from': start_date.strftime('%Y-%m-%d'),
             'to': end_date.strftime('%Y-%m-%d'),
-            'limit': limit
+            'limit': limit  # Now using the passed limit parameter
         }
         
         all_bookings = []
@@ -58,11 +58,8 @@ class SmoobuAPI:
                 break
 
             all_bookings.extend(bookings)
-            logger.info(f"API returned {len(bookings)} bookings")
+            logger.info(f"API returned {len(bookings)} bookings out of {limit} requested")
             logger.info(f"Retrieved {len(bookings)} bookings on page {page}")
-            
-            if len(bookings) == limit:
-                logger.warning(f"Number of bookings returned ({len(bookings)}) is equal to the limit. There might be more data available.")
             
             # Log the earliest and latest dates of bookings in this response
             if bookings:
@@ -115,9 +112,6 @@ class SmoobuAPI:
                 continue
             if end_date_filter and booking['check_in'] > end_date_filter:
                 logger.debug(f"Filtered out booking: {booking['guest_name']} - {booking['check_in']} to {booking['check_out']} - Reason: End date filter")
-                continue
-            if booking['guest_name'].lower() == "unknown guest":
-                logger.debug(f"Filtered out booking: {booking['guest_name']} - {booking['check_in']} to {booking['check_out']} - Reason: Unknown Guest")
                 continue
             filtered.append(booking)
         return filtered
@@ -186,3 +180,6 @@ class SmoobuAPI:
                     return [], error_message
 
     # Add more API methods as needed
+
+# Note: Check API documentation for any constraints on the limit parameter.
+# The current implementation uses a default limit of 100 bookings per page.
