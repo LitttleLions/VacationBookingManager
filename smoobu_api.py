@@ -39,23 +39,34 @@ class SmoobuAPI:
         
         all_bookings = []
         page = 1
+        total_api_calls = 0
 
         while True:
             params['page'] = page
             bookings, error = self._fetch_bookings(params, max_retries, initial_delay)
+            total_api_calls += 1
             
             if error:
-                return [], error
+                logger.error(f"Error fetching bookings on page {page}: {error}")
+                break
+
+            if not bookings:
+                logger.debug(f"No more bookings found after page {page-1}")
+                break
 
             # Apply filters
             filtered_bookings = self._apply_filters(bookings, guest_filter, apartment_filter)
             all_bookings.extend(filtered_bookings)
             
+            logger.debug(f"Retrieved {len(bookings)} bookings on page {page}, {len(filtered_bookings)} after filtering")
+            
             if len(bookings) < limit:
+                logger.debug(f"Reached last page of results on page {page}")
                 break
             
             page += 1
 
+        logger.debug(f"Total API calls made: {total_api_calls}")
         logger.debug(f"Retrieved a total of {len(all_bookings)} bookings after filtering")
         return all_bookings, None
 
@@ -63,7 +74,8 @@ class SmoobuAPI:
         return [
             booking for booking in bookings
             if (not guest_filter or guest_filter.lower() in booking['guest_name'].lower()) and
-               (not apartment_filter or apartment_filter.lower() == booking['apartment_name'].lower())
+               (not apartment_filter or apartment_filter.lower() == booking['apartment_name'].lower()) and
+               booking['guest_name'].lower() != "unknown guest"
         ]
 
     def _fetch_bookings(self, params, max_retries, initial_delay):
