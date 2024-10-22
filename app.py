@@ -21,19 +21,13 @@ def get_locale():
 
 babel.init_app(app, locale_selector=get_locale)
 
-def filter_bookings(bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter):
-    filtered_bookings = []
-    for booking in bookings:
-        if (guest_filter.lower() in booking['guest_name'].lower() and
-            (apartment_filter == '' or apartment_filter.lower() == booking['apartment_name'].lower()) and
-            (not start_date_filter or booking['check_out'] >= start_date_filter) and
-            (not end_date_filter or booking['check_in'] <= end_date_filter) and
-            booking['guest_name'] != "Unknown Guest"):
-            filtered_bookings.append(booking)
-    return filtered_bookings
-
 def fetch_and_filter_bookings(guest_filter='', apartment_filter='', start_date_filter='', end_date_filter=''):
-    bookings, error = smoobu_api.get_bookings()
+    bookings, error = smoobu_api.get_bookings(
+        guest_filter=guest_filter,
+        apartment_filter=apartment_filter,
+        start_date_filter=start_date_filter,
+        end_date_filter=end_date_filter
+    )
     if error:
         logger.error(f"Error fetching bookings: {error}")
         return [], error
@@ -44,10 +38,7 @@ def fetch_and_filter_bookings(guest_filter='', apartment_filter='', start_date_f
         latest_date = max(booking['check_out'] for booking in bookings)
         logger.debug(f"Date range of bookings: from {earliest_date} to {latest_date}")
 
-    filtered_bookings = filter_bookings(bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
-    logger.debug(f"Filtered bookings: {len(filtered_bookings)} out of {len(bookings)}")
-
-    return filtered_bookings, None
+    return bookings, None
 
 @app.route('/')
 def booking_list():

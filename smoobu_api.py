@@ -18,10 +18,19 @@ class SmoobuAPI:
             'Accept': 'application/json'
         }
 
-    def get_bookings(self, max_retries=3, initial_delay=1, limit=100):
+    def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1, limit=100):
         logger.debug("Entering get_bookings method")
-        start_date = datetime.now()
-        end_date = start_date + timedelta(days=730)  # Fetch bookings for 2 years
+        
+        # Set date range (current date to 2 years in the future)
+        start_date = datetime.now().date()
+        end_date = start_date + timedelta(days=730)
+
+        # Apply date filters if provided
+        if start_date_filter:
+            start_date = max(start_date, datetime.strptime(start_date_filter, '%Y-%m-%d').date())
+        if end_date_filter:
+            end_date = min(end_date, datetime.strptime(end_date_filter, '%Y-%m-%d').date())
+
         params = {
             'from': start_date.strftime('%Y-%m-%d'),
             'to': end_date.strftime('%Y-%m-%d'),
@@ -38,15 +47,24 @@ class SmoobuAPI:
             if error:
                 return [], error
 
-            all_bookings.extend(bookings)
+            # Apply filters
+            filtered_bookings = self._apply_filters(bookings, guest_filter, apartment_filter)
+            all_bookings.extend(filtered_bookings)
             
             if len(bookings) < limit:
                 break
             
             page += 1
 
-        logger.debug(f"Retrieved a total of {len(all_bookings)} bookings")
+        logger.debug(f"Retrieved a total of {len(all_bookings)} bookings after filtering")
         return all_bookings, None
+
+    def _apply_filters(self, bookings, guest_filter, apartment_filter):
+        return [
+            booking for booking in bookings
+            if (not guest_filter or guest_filter.lower() in booking['guest_name'].lower()) and
+               (not apartment_filter or apartment_filter.lower() == booking['apartment_name'].lower())
+        ]
 
     def _fetch_bookings(self, params, max_retries, initial_delay):
         for attempt in range(max_retries):
