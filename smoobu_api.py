@@ -23,7 +23,7 @@ class SmoobuAPI:
         
         # Set date range (current date to 3 years in the future)
         start_date = datetime.now().date()
-        end_date = start_date + timedelta(days=1095)  # Increased to 3 years
+        end_date = start_date + timedelta(days=1095)
 
         # Apply date filters if provided
         if start_date_filter:
