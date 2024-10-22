@@ -21,9 +21,9 @@ class SmoobuAPI:
     def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1, limit=500):
         logger.debug("Entering get_bookings method")
         
-        # Set date range (current date to 3 years in the future)
+        # Set date range (current date to 2 years in the future)
         start_date = datetime.now().date()
-        end_date = start_date + timedelta(days=1095)
+        end_date = start_date + timedelta(days=730)
 
         # Apply date filters if provided
         if start_date_filter:
