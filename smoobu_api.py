@@ -18,7 +18,7 @@ class SmoobuAPI:
             'Accept': 'application/json'
         }
 
-    def get_bookings(self, max_retries=3, initial_delay=1, limit=1000):
+    def get_bookings(self, max_retries=3, initial_delay=1, limit=100):
         logger.debug("Entering get_bookings method")
         start_date = datetime.now()
         end_date = start_date + timedelta(days=730)  # Fetch bookings for 2 years
@@ -52,7 +52,7 @@ class SmoobuAPI:
         for attempt in range(max_retries):
             try:
                 url = f"{self.BASE_URL}/reservations"
-                logger.debug(f"Sending request to {url}")
+                logger.debug(f"Sending request to {url} with params: {params}")
                 response = requests.get(url, headers=self.headers, params=params)
                 response.raise_for_status()
                 
