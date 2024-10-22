@@ -20,10 +20,11 @@ class SmoobuAPI:
 
     def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1, limit=500):
         logger.debug("Entering get_bookings method")
+        logger.info(f"Using limit of {limit} bookings per page")
         
-        # Set date range (current date to 10 years in the future)
+        # Set date range (current date to 3 years in the future)
         start_date = datetime.now().date()
-        end_date = start_date + timedelta(days=3650)  # 10 years
+        end_date = start_date + timedelta(days=1095)  # 3 years
 
         # Apply date filters if provided
         if start_date_filter:
@@ -57,7 +58,11 @@ class SmoobuAPI:
                 break
 
             all_bookings.extend(bookings)
+            logger.info(f"API returned {len(bookings)} bookings")
             logger.info(f"Retrieved {len(bookings)} bookings on page {page}")
+            
+            if len(bookings) == limit:
+                logger.warning(f"Number of bookings returned ({len(bookings)}) is equal to the limit. There might be more data available.")
             
             # Log the earliest and latest dates of bookings in this response
             if bookings:
@@ -126,7 +131,7 @@ class SmoobuAPI:
                 response.raise_for_status()
                 
                 data = response.json()
-                logger.debug(f"Received response: {json.dumps(data, indent=2)[:1000]}...")  # Truncate if too large
+                logger.debug(f"Received response: {json.dumps(data, indent=2)[:5000]}...")  # Truncate if too large
                 bookings = []
                 for booking in data.get('bookings', []):
                     adults = booking.get('adults', 0) or 0
