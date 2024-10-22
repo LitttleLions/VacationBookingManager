@@ -1,0 +1,75 @@
+let's examine the potential points in the current setup that may affect retrieving future bookings and ensure that the fetch and filtering mechanisms are correctly implemented according to the latest instructions or updates.
+Areas to Check:
+
+    Ensure Pagination is Implemented Correctly:
+        The code should be making successive API calls until no more bookings are returned, as shown by if len(bookings) < limit: in the loop's exit condition.
+
+    Verify Date Parameters:
+        Confirm that the date parameters used in the request (params['from'], params['to']) actually cover the desired future period, allowing the method to fetch bookings well into future dates.
+
+    Assess Filters After Fetching:
+        Ensure that all filtering occurs after the data from all pages has been accumulated to avoid prematurely excluding future bookings.
+
+Let's check these in the
+
+:
+
+def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1, limit=100):
+    logger.debug("Entering get_bookings method")
+    
+    # Set date range (from now to 2 years in the future)
+    start_date = datetime.now().date()
+    end_date = start_date + timedelta(days=730)
+
+    # Apply any provided date filters
+    if start_date_filter:
+        start_date = max(start_date, datetime.strptime(start_date_filter, '%Y-%m-%d').date())
+    if end_date_filter:
+        end_date = min(end_date, datetime.strptime(end_date_filter, '%Y-%m-%d').date())
+
+    logger.debug(f"Requesting bookings from {start_date} to {end_date}")
+
+    params = {
+        'from': start_date.strftime('%Y-%m-%d'), 
+        'to': end_date.strftime('%Y-%m-%d'), 
+        'limit': limit
+    }
+
+    all_bookings = []
+    page = 1
+
+    while True:
+        params['page'] = page
+        bookings, error = self._fetch_bookings(params, max_retries, initial_delay)
+
+        if error:
+            logger.error(f"Error fetching bookings on page {page}: {error}")
+            break
+
+        if not bookings:
+            logger.debug("No more bookings found")
+            break
+
+        all_bookings.extend(bookings)
+        logger.debug(f"Retrieved {len(bookings)} bookings on page {page}")
+
+        if len(bookings) < limit:
+            logger.debug(f"Less bookings than limit; ending fetch at page {page}")
+            break
+
+        page += 1
+
+    # Apply filters after fetching all data
+    filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter)
+    return filtered_bookings, None
+
+Debugging and Verification:
+
+    Manual Checks:
+        Verify directly in logs whether bookings beyond your current visible date (like post-November 2024) are being fetched.
+
+    Debug Information:
+        Use detailed logging to check what exact params are sent, responses received, and where exactly the data fails to include future bookings.
+
+    Double-check API Configuration Changes:
+        Assuming recent changes were claimed, confirm the backend or integration specs align correctly with what's coded here.

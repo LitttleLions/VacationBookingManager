@@ -21,9 +21,9 @@ class SmoobuAPI:
     def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1, limit=500):
         logger.debug("Entering get_bookings method")
         
-        # Set date range (current date to 2 years in the future)
+        # Set date range (current date to 5 years in the future)
         start_date = datetime.now().date()
-        end_date = start_date + timedelta(days=730)
+        end_date = start_date + timedelta(days=1825)  # Increased to 5 years
 
         # Apply date filters if provided
         if start_date_filter:
@@ -84,9 +84,15 @@ class SmoobuAPI:
         filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter, start_date_filter, end_date_filter)
         logger.debug(f"Total bookings after filtering: {len(filtered_bookings)}")
 
-        # Check if we might be missing bookings due to API limitations
+        # Check if we might be missing future bookings
         if filtered_bookings and filtered_bookings[-1]['check_out'] == end_date.strftime('%Y-%m-%d'):
             logger.warning("The last booking's check-out date matches the end date of our query. We might be missing future bookings.")
+
+        # Log the date range of filtered bookings
+        if filtered_bookings:
+            earliest_date = min(booking['check_in'] for booking in filtered_bookings)
+            latest_date = max(booking['check_out'] for booking in filtered_bookings)
+            logger.debug(f"Date range of filtered bookings: from {earliest_date} to {latest_date}")
 
         return filtered_bookings, None
 
@@ -120,7 +126,7 @@ class SmoobuAPI:
                 response.raise_for_status()
                 
                 data = response.json()
-                logger.debug(f"Received response: {json.dumps(data, indent=2)}")
+                logger.debug(f"Received response: {json.dumps(data, indent=2)[:1000]}...")  # Truncate if too large
                 bookings = []
                 for booking in data.get('bookings', []):
                     adults = booking.get('adults', 0) or 0
