@@ -21,9 +21,9 @@ class SmoobuAPI:
     def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1):
         logger.debug("Entering get_bookings method")
         
-        # Set date range (current date to 5 years in the future)
+        # Set date range (current date to 50 years in the future)
         start_date = datetime.now().date()
-        end_date = start_date + timedelta(days=1825)  # 5 years
+        end_date = start_date + timedelta(days=18250)  # 50 years
 
         # Apply date filters if provided
         if start_date_filter:
@@ -36,7 +36,7 @@ class SmoobuAPI:
         params = {
             'from': start_date.strftime('%Y-%m-%d'),
             'to': end_date.strftime('%Y-%m-%d'),
-            'limit': 500  # Increased limit to 500
+            'limit': 500  # Maximum limit allowed by the API
         }
         
         all_bookings = []
@@ -74,8 +74,8 @@ class SmoobuAPI:
 
         # Log the date range of all fetched bookings
         if all_bookings:
-            earliest_date = min(booking['check_in'] for booking in all_bookings)
-            latest_date = max(booking['check_out'] for booking in all_bookings)
+            earliest_date = min(booking['arrival'] for booking in all_bookings)
+            latest_date = max(booking['departure'] for booking in all_bookings)
             logger.info(f"Date range of all fetched bookings: from {earliest_date} to {latest_date}")
 
         # Apply filters after fetching all bookings
@@ -84,8 +84,8 @@ class SmoobuAPI:
 
         # Log the date range of filtered bookings
         if filtered_bookings:
-            earliest_date = min(booking['check_in'] for booking in filtered_bookings)
-            latest_date = max(booking['check_out'] for booking in filtered_bookings)
+            earliest_date = min(booking['arrival'] for booking in filtered_bookings)
+            latest_date = max(booking['departure'] for booking in filtered_bookings)
             logger.info(f"Date range of filtered bookings: from {earliest_date} to {latest_date}")
 
         return filtered_bookings, None
@@ -94,16 +94,12 @@ class SmoobuAPI:
         filtered = []
         for booking in bookings:
             if guest_filter and guest_filter.lower() not in booking['guest_name'].lower():
-                logger.debug(f"Filtered out booking: {booking['guest_name']} - {booking['check_in']} to {booking['check_out']} - Reason: Guest filter")
                 continue
-            if apartment_filter and apartment_filter.lower() != booking['apartment_name'].lower():
-                logger.debug(f"Filtered out booking: {booking['guest_name']} - {booking['check_in']} to {booking['check_out']} - Reason: Apartment filter")
+            if apartment_filter and apartment_filter.lower() != booking['apartment']['name'].lower():
                 continue
-            if start_date_filter and booking['check_out'] < start_date_filter:
-                logger.debug(f"Filtered out booking: {booking['guest_name']} - {booking['check_in']} to {booking['check_out']} - Reason: Start date filter")
+            if start_date_filter and booking['departure'] < start_date_filter:
                 continue
-            if end_date_filter and booking['check_in'] > end_date_filter:
-                logger.debug(f"Filtered out booking: {booking['guest_name']} - {booking['check_in']} to {booking['check_out']} - Reason: End date filter")
+            if end_date_filter and booking['arrival'] > end_date_filter:
                 continue
             filtered.append(booking)
         return filtered
@@ -117,44 +113,8 @@ class SmoobuAPI:
                 response.raise_for_status()
                 
                 data = response.json()
-                logger.debug(f"Received response: {json.dumps(data, indent=2)[:5000]}...")  # Truncate if too large
-                bookings = []
-                for booking in data.get('bookings', []):
-                    adults = booking.get('adults', 0) or 0
-                    children = booking.get('children', 0) or 0
-                    
-                    guest_name = (f"{booking.get('firstname', '')} {booking.get('lastname', '')}".strip() or
-                                  booking.get('guest-name', '') or
-                                  "Unknown Guest")
-                    
-                    total_price = booking.get('total-amount') or booking.get('price') or 0
-                    if isinstance(total_price, str):
-                        try:
-                            total_price = float(total_price)
-                        except ValueError:
-                            total_price = 0
-
-                    bookings.append({
-                        'guest_name': guest_name,
-                        'booking_date': booking.get('created-at', ''),
-                        'apartment_name': booking.get('apartment', {}).get('name', ''),
-                        'check_in': booking.get('arrival', ''),
-                        'check_out': booking.get('departure', ''),
-                        'guests': adults + children,
-                        'adults': adults,
-                        'children': children,
-                        'total_price': total_price,
-                        'status': booking.get('status', 'Unknown'),
-                        'type': booking.get('type', 'Unknown'),
-                        'phone_number': booking.get('phone', 'N/A'),
-                        'email': booking.get('email', 'N/A'),
-                        'notice': booking.get('notice', ''),
-                        'assistantNotice': booking.get('assistant-notice', ''),
-                        'language': booking.get('language', 'N/A'),
-                        'channel_name': booking.get('channel', {}).get('name', 'N/A')
-                    })
-                logger.info(f"Processed {len(bookings)} bookings")
-                return bookings, None
+                logger.debug(f"Received response: {json.dumps(data, indent=2)}")
+                return data.get('bookings', []), None
             except requests.RequestException as e:
                 logger.error(f"Request failed: {str(e)}")
                 if attempt < max_retries - 1:
@@ -171,8 +131,43 @@ class SmoobuAPI:
                     logger.error(error_message)
                     return [], error_message
 
-    # Add more API methods as needed
+    def get_bookings_for_period(self, start_date, end_date):
+        logger.info(f"Fetching bookings for specific period: {start_date} to {end_date}")
+        all_bookings = []
+        page = 1
+        params = {
+            'from': start_date,
+            'to': end_date,
+            'limit': 500
+        }
 
-# Note: Check API documentation for any constraints on the limit parameter.
-# The current implementation uses a limit of 500 bookings per page.
+        while True:
+            params['page'] = page
+            bookings, error = self._fetch_bookings(params, max_retries=3, initial_delay=1)
+            if error:
+                logger.error(f"Error fetching bookings for period {start_date} to {end_date} on page {page}: {error}")
+                break
+
+            if not bookings:
+                logger.debug(f"No more bookings found after page {page-1}")
+                break
+
+            all_bookings.extend(bookings)
+            logger.info(f"Retrieved {len(bookings)} bookings for period {start_date} to {end_date} on page {page}")
+
+            if len(bookings) < params['limit']:
+                logger.debug(f"Reached last page of results on page {page}")
+                break
+
+            page += 1
+
+        logger.info(f"Total bookings fetched: {len(all_bookings)}")
+        if all_bookings:
+            earliest_date = min(booking['arrival'] for booking in all_bookings)
+            latest_date = max(booking['departure'] for booking in all_bookings)
+            logger.info(f"Date range of fetched bookings: from {earliest_date} to {latest_date}")
+
+        return all_bookings, None
+
+# Note: The current implementation uses a limit of 500 bookings per page.
 # If the API has a lower limit, adjust the 'limit' parameter in the get_bookings method accordingly.

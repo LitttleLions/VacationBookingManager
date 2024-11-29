@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, render_template, request, flash, g
+from flask import Flask, render_template, request, flash, g, jsonify
 from flask_babel import Babel, gettext as _
 from datetime import datetime, timedelta, date
 from smoobu_api import SmoobuAPI
@@ -34,8 +34,8 @@ def fetch_and_filter_bookings(guest_filter='', apartment_filter='', start_date_f
 
     logger.debug(f"Retrieved {len(bookings)} bookings from Smoobu API")
     if bookings:
-        earliest_date = min(booking['check_in'] for booking in bookings)
-        latest_date = max(booking['check_out'] for booking in bookings)
+        earliest_date = min(booking['arrival'] for booking in bookings)
+        latest_date = max(booking['departure'] for booking in bookings)
         logger.debug(f"Date range of bookings: from {earliest_date} to {latest_date}")
 
     return bookings, None
@@ -56,7 +56,7 @@ def booking_list():
         filtered_bookings = []
 
     all_bookings, _ = smoobu_api.get_bookings()
-    apartments = sorted(set(booking['apartment_name'] for booking in all_bookings))
+    apartments = sorted(set(booking['apartment']['name'] for booking in all_bookings))
 
     return render_template('booking_list.html', bookings=filtered_bookings,
                            guest_filter=guest_filter,
@@ -84,16 +84,16 @@ def calendar_view():
         filtered_bookings = []
 
     all_bookings, _ = smoobu_api.get_bookings()
-    apartments = sorted(set(booking['apartment_name'] for booking in all_bookings))
+    apartments = sorted(set(booking['apartment']['name'] for booking in all_bookings))
 
     calendar_data = {apartment: {date: [] for date in week_dates} for apartment in apartments}
 
     for booking in filtered_bookings:
-        check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d')
-        check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d')
+        check_in = datetime.strptime(booking['arrival'], '%Y-%m-%d')
+        check_out = datetime.strptime(booking['departure'], '%Y-%m-%d')
         for date in week_dates:
             if check_in <= date < check_out:
-                calendar_data[booking['apartment_name']][date].append(booking)
+                calendar_data[booking['apartment']['name']][date].append(booking)
 
     apartments_with_bookings = [apartment for apartment in apartments if any(calendar_data[apartment].values())]
 
@@ -130,7 +130,7 @@ def print_view():
         filtered_bookings = []
 
     all_bookings, _ = smoobu_api.get_bookings()
-    apartments = sorted(set(booking['apartment_name'] for booking in all_bookings))
+    apartments = sorted(set(booking['apartment']['name'] for booking in all_bookings))
 
     logger.debug(f"Filtered bookings for print view: {len(filtered_bookings)}")
 
@@ -140,6 +140,46 @@ def print_view():
                            start_date_filter=start_date_filter,
                            end_date_filter=end_date_filter,
                            apartments=apartments)
+
+@app.route('/test_future_bookings')
+def test_future_bookings():
+    start_date = "2024-01-01"
+    end_date = "2074-12-31"  # Extended to 50 years in the future
+    bookings, error = smoobu_api.get_bookings_for_period(start_date, end_date)
+    if error:
+        return jsonify({"error": error}), 500
+    
+    # Log detailed information about the fetched bookings
+    logger.info(f"Fetched {len(bookings)} bookings for period {start_date} to {end_date}")
+    if bookings:
+        earliest_date = min(booking['arrival'] for booking in bookings)
+        latest_date = max(booking['departure'] for booking in bookings)
+        logger.info(f"Date range of fetched bookings: from {earliest_date} to {latest_date}")
+    
+    # Group bookings by year
+    bookings_by_year = {}
+    for booking in bookings:
+        year = datetime.strptime(booking['arrival'], '%Y-%m-%d').year
+        if year not in bookings_by_year:
+            bookings_by_year[year] = []
+        bookings_by_year[year].append(booking)
+    
+    # Prepare summary data
+    summary = {
+        "total_bookings": len(bookings),
+        "earliest_date": earliest_date if bookings else None,
+        "latest_date": latest_date if bookings else None,
+        "bookings_by_year": {year: len(year_bookings) for year, year_bookings in bookings_by_year.items()},
+    }
+    
+    return jsonify({
+        "summary": summary,
+        "bookings": bookings,
+        "date_range": {
+            "start": start_date,
+            "end": end_date
+        }
+    })
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
