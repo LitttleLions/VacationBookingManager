@@ -21,9 +21,9 @@ class SmoobuAPI:
     def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1):
         logger.debug("Entering get_bookings method")
         
-        # Set initial date range (current date to 5 years in the future)
+        # Set initial date range (current date to 10 years in the future)
         start_date = datetime.now().date()
-        end_date = start_date + timedelta(days=1825)  # 5 years
+        end_date = start_date + timedelta(days=3650)  # 10 years
 
         # Apply date filters if provided
         if start_date_filter:
@@ -43,15 +43,24 @@ class SmoobuAPI:
 
         logger.info(f"Requesting bookings from {start_date} to {end_date}")
 
-        params = {
-            'from': start_date.strftime('%Y-%m-%d'),
-            'to': end_date.strftime('%Y-%m-%d'),
-            'limit': 25  # Set to match API's actual limit
-        }
-        
+        # Initialize parameters with a smaller chunk size to handle API limits
+        chunk_size = timedelta(days=365)  # Fetch one year at a time
+        current_start = start_date
         all_bookings = []
-        page = 1
         total_api_calls = 0
+
+        while current_start < end_date:
+            # Calculate end date for current chunk
+            chunk_end = min(current_start + chunk_size, end_date)
+            
+            params = {
+                'from': current_start.strftime('%Y-%m-%d'),
+                'to': chunk_end.strftime('%Y-%m-%d'),
+                'limit': 25  # Set to match API's actual limit
+            }
+            
+            logger.info(f"Fetching chunk from {current_start} to {chunk_end}")
+            page = 1
 
         while True:
             params['page'] = page

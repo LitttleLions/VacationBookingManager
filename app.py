@@ -250,17 +250,53 @@ def fetch_and_filter_bookings(guest_filter='', apartment_filter='', start_date_f
         
         # Log detailed structure of first booking as example
         if len(bookings) > 0:
-            logger.debug(f"Sample booking structure: {json.dumps(bookings[0], indent=2)}")
+            logger.debug(f"Sample booking structure before mapping: {json.dumps(bookings[0], indent=2)}")
             
-        # Verify required fields are present
-        required_fields = ['guest_name', 'arrival', 'departure', 'apartment', 'channel']
+        # Map fields to match template expectations
+        mapped_bookings = []
         for booking in bookings:
-            missing_fields = [field for field in required_fields if field not in booking]
-            if missing_fields:
-                logger.error(f"Booking is missing required fields: {missing_fields}")
-                logger.error(f"Problematic booking: {json.dumps(booking, indent=2)}")
+            # Skip blocked bookings
+            if booking.get('is-blocked-booking', False):
+                continue
 
-    return bookings, None
+            # Construct guest name from available fields
+            guest_name = (
+                booking.get('guest-name') or
+                f"{booking.get('firstname', '').strip()} {booking.get('lastname', '').strip()}".strip() or
+                'Unknown Guest'
+            )
+
+            # Map API fields to our application fields
+            mapped_booking = {
+                'check_in': booking['arrival'],
+                'check_out': booking['departure'],
+                'guest_name': guest_name,
+                'apartment_name': booking['apartment']['name'],
+                'channel_name': booking.get('channel', {}).get('name', 'Direct'),
+                'phone_number': booking.get('phone', ''),
+                'guests': int(booking.get('adults', 0) or 0) + int(booking.get('children', 0) or 0),
+                'assistantNotice': booking.get('assistant-notice', ''),
+                'language': booking.get('language', 'en'),
+                'total_price': booking.get('price', ''),
+                'assistant_notice': booking.get('assistant-notice', '')  # For print view
+            }
+            
+            # Apply guest filter if provided
+            if guest_filter and guest_filter.lower() not in guest_name.lower():
+                continue
+                
+            # Apply apartment filter if provided
+            if apartment_filter and apartment_filter.lower() != mapped_booking['apartment_name'].lower():
+                continue
+                
+            mapped_bookings.append(mapped_booking)
+        
+        # Log mapped booking structure
+        if mapped_bookings:
+            logger.debug(f"Sample mapped booking structure: {json.dumps(mapped_bookings[0], indent=2)}")
+            logger.debug(f"Total mapped bookings: {len(mapped_bookings)}")
+
+    return mapped_bookings if bookings else [], None
 
 @app.route('/')
 def booking_list():
