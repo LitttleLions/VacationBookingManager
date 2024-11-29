@@ -44,14 +44,16 @@ class SmoobuAPI:
         logger.info(f"Requesting bookings from {start_date} to {end_date}")
 
         # Initialize parameters with a smaller chunk size to handle API limits
-        chunk_size = timedelta(days=365)  # Fetch one year at a time
+        chunk_size = timedelta(days=90)  # Fetch 90 days at a time
         current_start = start_date
         all_bookings = []
         total_api_calls = 0
+        chunk_number = 1
 
         while current_start < end_date:
             # Calculate end date for current chunk
             chunk_end = min(current_start + chunk_size, end_date)
+            logger.info(f"Processing chunk {chunk_number}: {current_start} to {chunk_end}")
             
             params = {
                 'from': current_start.strftime('%Y-%m-%d'),
@@ -59,39 +61,45 @@ class SmoobuAPI:
                 'limit': 25  # Set to match API's actual limit
             }
             
-            logger.info(f"Fetching chunk from {current_start} to {chunk_end}")
             page = 1
+            chunk_bookings = []
 
-        while True:
-            params['page'] = page
-            full_url = f"{self.BASE_URL}/reservations"
-            logger.info(f"Fetching page {page} from {full_url}")
-            
-            bookings, error = self._fetch_bookings(params, max_retries, initial_delay)
-            total_api_calls += 1
-            
-            if error:
-                logger.error(f"Error fetching bookings on page {page}: {error}")
-                break
+            while True:
+                params['page'] = page
+                logger.debug(f"Fetching page {page} for chunk {chunk_number}")
+                
+                bookings, error = self._fetch_bookings(params, max_retries, initial_delay)
+                total_api_calls += 1
+                
+                if error:
+                    logger.error(f"Error fetching bookings for chunk {chunk_number}, page {page}: {error}")
+                    break
 
-            if not bookings:
-                logger.debug(f"No more bookings found after page {page-1}")
-                break
+                if not bookings:
+                    logger.debug(f"No more bookings found in chunk {chunk_number} after page {page-1}")
+                    break
 
-            all_bookings.extend(bookings)
-            logger.info(f"Retrieved {len(bookings)} bookings on page {page}")
+                chunk_bookings.extend(bookings)
+                logger.debug(f"Retrieved {len(bookings)} bookings on page {page} for chunk {chunk_number}")
+                
+                # If we received fewer bookings than the limit, we've reached the last page
+                if len(bookings) < params['limit']:
+                    logger.debug(f"Reached last page of results for chunk {chunk_number} on page {page}")
+                    break
+                
+                page += 1
+                time.sleep(1)  # Add a small delay between requests
+
+            # Add chunk bookings to all bookings
+            all_bookings.extend(chunk_bookings)
+            logger.info(f"Chunk {chunk_number} complete. Retrieved {len(chunk_bookings)} bookings")
             
-            # If we received fewer bookings than the limit, we've reached the last page
-            if len(bookings) < params['limit']:
-                logger.debug(f"Reached last page of results on page {page}")
-                break
-            
-            page += 1
-            # Add a small delay between requests to avoid rate limiting
-            time.sleep(1)
+            # Move to next chunk
+            current_start = chunk_end + timedelta(days=1)
+            chunk_number += 1
 
         logger.info(f"Total API calls made: {total_api_calls}")
-        logger.info(f"Total bookings fetched: {len(all_bookings)}")
+        logger.info(f"Total bookings fetched before filtering: {len(all_bookings)}")
 
         # Log the date range of all fetched bookings
         if all_bookings:
@@ -101,91 +109,103 @@ class SmoobuAPI:
 
         # Apply filters after fetching all bookings
         filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter)
-        logger.info(f"Total bookings after filtering: {len(filtered_bookings)}")
-
         return filtered_bookings, None
 
     def _apply_filters(self, bookings, guest_filter, apartment_filter):
         filtered = []
+        total_bookings = len(bookings)
+        logger.debug(f"Starting filtering process on {total_bookings} bookings")
+
         for booking in bookings:
-            if guest_filter and guest_filter.lower() not in booking['guest_name'].lower():
-                continue
-            if apartment_filter and apartment_filter.lower() != booking['apartment']['name'].lower():
-                continue
+            # Log the booking being processed
+            logger.debug(f"Processing booking: {booking.get('id', 'No ID')} - {booking.get('guest-name', 'Unknown Guest')}")
+            
+            # Apply guest filter if provided
+            if guest_filter:
+                guest_name = (
+                    booking.get('guest-name') or 
+                    f"{booking.get('firstname', '').strip()} {booking.get('lastname', '').strip()}".strip() or 
+                    'Unknown Guest'
+                ).lower()
+                
+                if guest_filter.lower() not in guest_name:
+                    logger.debug(f"Booking {booking.get('id', 'No ID')} filtered out by guest filter")
+                    continue
+                logger.debug(f"Booking {booking.get('id', 'No ID')} passed guest filter")
+
+            # Apply apartment filter if provided
+            if apartment_filter:
+                apartment_name = booking.get('apartment', {}).get('name', '').lower()
+                if apartment_filter.lower() != apartment_name:
+                    logger.debug(f"Booking {booking.get('id', 'No ID')} filtered out by apartment filter")
+                    continue
+                logger.debug(f"Booking {booking.get('id', 'No ID')} passed apartment filter")
+
             filtered.append(booking)
+
+        logger.info(f"Filtering complete: {len(filtered)} bookings remained from {total_bookings}")
         return filtered
 
     def _fetch_bookings(self, params, max_retries, initial_delay):
+        url = f"{self.BASE_URL}/reservations"
+        logger.debug(f"Fetching bookings from {url} with params: {params}")
+
         for attempt in range(max_retries):
             try:
-                url = f"{self.BASE_URL}/reservations"
                 response = requests.get(url, headers=self.headers, params=params)
+                
+                # Log the complete request details
+                logger.debug(f"Request URL: {response.url}")
+                logger.debug(f"Request headers: {self.headers}")
+                logger.debug(f"Response status code: {response.status_code}")
+                logger.debug(f"Response headers: {response.headers}")
+
                 response.raise_for_status()
                 
                 data = response.json()
-                logger.debug(f"Response status code: {response.status_code}")
-                logger.debug(f"Response headers: {response.headers}")
                 
-                # Log the first page response in detail to understand the API structure
-                if params.get('page', 1) == 1:
-                    logger.debug(f"First page response structure: {json.dumps(data, indent=2)[:500]}...")
-                
+                # Validate response structure
+                if not isinstance(data, dict):
+                    error_msg = f"Invalid response format. Expected dict, got {type(data)}"
+                    logger.error(error_msg)
+                    return [], error_msg
+
                 bookings = data.get('bookings', [])
-                if not bookings:
-                    logger.warning(f"No bookings found in response for page {params.get('page', 1)}")
+                if not isinstance(bookings, list):
+                    error_msg = f"Invalid bookings format. Expected list, got {type(bookings)}"
+                    logger.error(error_msg)
+                    return [], error_msg
+
+                # Log response summary
+                logger.debug(f"Retrieved {len(bookings)} bookings")
+                if bookings:
+                    logger.debug(f"First booking sample: {json.dumps(bookings[0], indent=2)}")
                 
                 return bookings, None
+
             except requests.RequestException as e:
-                logger.error(f"Request failed: {str(e)}")
+                logger.error(f"Request failed (attempt {attempt + 1}/{max_retries}): {str(e)}")
+                if hasattr(e, 'response'):
+                    logger.error(f"Response status code: {e.response.status_code if e.response else 'No status code'}")
+                    logger.error(f"Response content: {e.response.text[:1000] if e.response else 'No response content'}...")
+
                 if attempt < max_retries - 1:
                     delay = initial_delay * (2 ** attempt)
                     logger.info(f"Retrying in {delay} seconds...")
                     time.sleep(delay)
                 else:
-                    error_message = f"Error fetching bookings after {max_retries} attempts: {str(e)}"
-                    if hasattr(e, 'response'):
-                        error_message += f"\nResponse status code: {e.response.status_code if e.response else 'No status code'}"
-                        error_message += f"\nResponse content: {e.response.text[:500] if e.response else 'No response content'}..."
+                    error_message = f"Failed to fetch bookings after {max_retries} attempts: {str(e)}"
                     logger.error(error_message)
                     return [], error_message
 
+            except json.JSONDecodeError as e:
+                error_message = f"Failed to parse API response: {str(e)}"
+                logger.error(error_message)
+                if hasattr(e, 'response'):
+                    logger.error(f"Raw response content: {e.response.text[:1000]}...")
+                return [], error_message
+
     def get_bookings_for_period(self, start_date, end_date):
+        """Helper method to fetch bookings for a specific period"""
         logger.info(f"Fetching bookings for specific period: {start_date} to {end_date}")
-        params = {
-            'from': start_date,
-            'to': end_date,
-            'limit': 25
-        }
-        
-        all_bookings = []
-        page = 1
-
-        while True:
-            params['page'] = page
-            bookings, error = self._fetch_bookings(params, max_retries=3, initial_delay=1)
-            
-            if error:
-                logger.error(f"Error fetching bookings for period {start_date} to {end_date} on page {page}: {error}")
-                break
-
-            if not bookings:
-                logger.debug(f"No more bookings found after page {page-1}")
-                break
-
-            all_bookings.extend(bookings)
-            logger.info(f"Retrieved {len(bookings)} bookings for period {start_date} to {end_date} on page {page}")
-
-            if len(bookings) < params['limit']:
-                logger.debug(f"Reached last page of results on page {page}")
-                break
-
-            page += 1
-            time.sleep(1)  # Add delay between requests
-
-        logger.info(f"Total bookings fetched: {len(all_bookings)}")
-        if all_bookings:
-            earliest_date = min(booking['arrival'] for booking in all_bookings)
-            latest_date = max(booking['departure'] for booking in all_bookings)
-            logger.info(f"Date range of fetched bookings: from {earliest_date} to {latest_date}")
-
-        return all_bookings, None
+        return self.get_bookings(start_date_filter=start_date, end_date_filter=end_date)
