@@ -347,11 +347,11 @@ def calendar_view():
     calendar_data = {apartment: {date: [] for date in week_dates} for apartment in apartments}
 
     for booking in filtered_bookings:
-        check_in = datetime.strptime(booking['arrival'], '%Y-%m-%d')
-        check_out = datetime.strptime(booking['departure'], '%Y-%m-%d')
+        check_in = datetime.strptime(booking['check_in'], '%Y-%m-%d')
+        check_out = datetime.strptime(booking['check_out'], '%Y-%m-%d')
         for date in week_dates:
             if check_in <= date < check_out:
-                calendar_data[booking['apartment']['name']][date].append(booking)
+                calendar_data[booking['apartment_name']][date].append(booking)
 
     apartments_with_bookings = [apartment for apartment in apartments if any(calendar_data[apartment].values())]
 
