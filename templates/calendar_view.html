@@ -60,11 +60,11 @@
                         <div class="booking-item" data-booking='{{ booking|tojson|forceescape }}'>
                             <div class="booking-guest">
                                 {% if booking.check_in == date.strftime('%Y-%m-%d') %}
-                                <span class="start-arrow" style="color: green;">←</span>
+                                <span class="start-arrow" style="color: green; font-size: 12px; margin-right: 4px;">←</span>
                                 {% endif %}
                                 {{ booking.guest_name }}
                                 {% if booking.check_out == (date + timedelta(days=1)).strftime('%Y-%m-%d') %}
-                                <span class="end-arrow" style="color: red;">→</span>
+                                <span class="end-arrow" style="color: red; font-size: 12px; margin-left: 4px;">→</span>
                                 {% endif %}
                             </div>
                             <div class="booking-details">

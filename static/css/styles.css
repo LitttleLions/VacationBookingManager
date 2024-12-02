@@ -167,7 +167,7 @@ nav ul li a:hover {
     text-align: left;
     vertical-align: top;
     color: #000000 !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
 }
 
 .apartment-header {
@@ -187,7 +187,7 @@ nav ul li a:hover {
 .date-number {
     font-size: 14px;
     color: #000000 !important;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
 }
 
 .apartment-name {
@@ -223,7 +223,7 @@ nav ul li a:hover {
 .booking-details {
     color: #000000 !important;
     font-size: 14px;
-    font-weight: 500 !important;
+    font-weight: 600 !important;
 }
 
 /* Tooltip styles */
