@@ -19,7 +19,10 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 def get_locale():
-    return request.args.get('lang', 'en')
+    lang = request.args.get('lang')
+    if lang:
+        g.lang = lang
+    return g.get('lang', 'en')
 
 babel.init_app(app, locale_selector=get_locale)
 

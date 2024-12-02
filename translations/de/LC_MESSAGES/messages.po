@@ -16,17 +16,14 @@ msgstr "Druckansicht"
 msgid "Guest Name"
 msgstr "Gästename"
 
-msgid "Booking Date"
-msgstr "Buchungsdatum"
-
 msgid "Apartment Name"
 msgstr "Apartmentname"
 
 msgid "Check-in"
-msgstr "Check-in"
+msgstr "Anreise"
 
 msgid "Check-out"
-msgstr "Check-out"
+msgstr "Abreise"
 
 msgid "Guests"
 msgstr "Gäste"
@@ -34,23 +31,56 @@ msgstr "Gäste"
 msgid "Total Price"
 msgstr "Gesamtpreis"
 
-msgid "Monday"
-msgstr "Montag"
+msgid "Channel Name"
+msgstr "Kanalname"
 
-msgid "Tuesday"
-msgstr "Dienstag"
+msgid "Assistant Notice"
+msgstr "Hinweise"
 
-msgid "Wednesday"
-msgstr "Mittwoch"
+msgid "Adults"
+msgstr "Erwachsene"
 
-msgid "Thursday"
-msgstr "Donnerstag"
+msgid "Children"
+msgstr "Kinder"
 
-msgid "Friday"
-msgstr "Freitag"
+msgid "Total Guests"
+msgstr "Gesamtanzahl Gäste"
 
-msgid "Saturday"
-msgstr "Samstag"
+msgid "Email"
+msgstr "E-Mail"
 
-msgid "Sunday"
-msgstr "Sonntag"
+msgid "Phone"
+msgstr "Telefon"
+
+msgid "Previous Week"
+msgstr "Vorherige Woche"
+
+msgid "Next Week"
+msgstr "Nächste Woche"
+
+msgid "Week"
+msgstr "Woche"
+
+msgid "All Apartments"
+msgstr "Alle Apartments"
+
+msgid "Filter"
+msgstr "Filtern"
+
+msgid "Filter by guest name"
+msgstr "Nach Gästename filtern"
+
+msgid "Start Date"
+msgstr "Startdatum"
+
+msgid "End Date"
+msgstr "Enddatum"
+
+msgid "No bookings available."
+msgstr "Keine Buchungen verfügbar."
+
+msgid "Print View - Bookings"
+msgstr "Druckansicht - Buchungen"
+
+msgid "Weekly Calendar View"
+msgstr "Wöchentliche Kalenderansicht"

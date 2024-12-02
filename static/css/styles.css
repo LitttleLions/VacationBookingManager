@@ -2,12 +2,12 @@
 body {
     font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', 
                  Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
-    font-weight: 400;
+    font-weight: 500;
     line-height: 1.6;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
-    color: #333;
+    color: #000000 !important;
 }
 
 .container {
@@ -226,7 +226,7 @@ nav ul li a:hover {
 .booking-details {
     color: #000000 !important;
     font-size: 14px;
-    font-weight: 400 !important;
+    font-weight: 500 !important;
     max-width: 100%;
     overflow-x: hidden;
     word-wrap: break-word;
@@ -286,6 +286,12 @@ nav ul li a:hover {
     text-align: left;
     color: #000000 !important;
     font-weight: 500 !important;
+}
+
+.print-table td,
+.calendar-table td {
+    font-weight: 500 !important;
+    color: #000000 !important;
 }
 
 #bookingTable th {
