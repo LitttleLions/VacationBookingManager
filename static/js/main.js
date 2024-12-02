@@ -1,4 +1,10 @@
 document.addEventListener('DOMContentLoaded', function() {
+function switchLanguage(lang) {
+    const currentUrl = new URL(window.location.href);
+    currentUrl.searchParams.set('lang', lang);
+    window.location.href = currentUrl.toString();
+}
+
     const spinner = document.getElementById('loading-spinner');
     const container = document.querySelector('.container');
     
