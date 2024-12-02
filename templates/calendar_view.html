@@ -58,7 +58,15 @@
                     <td class="calendar-cell {% if date.date() == today %}current-day{% endif %}">
                         {% for booking in calendar_data[apartment].get(date, []) %}
                         <div class="booking-item" data-booking='{{ booking|tojson|forceescape }}'>
-                            <div class="booking-guest">{{ booking.guest_name }}</div>
+                            <div class="booking-guest">
+                                {% if loop.first %}
+                                <span class="start-arrow" style="color: green;">←</span>
+                                {% endif %}
+                                {{ booking.guest_name }}
+                                {% if loop.last %}
+                                <span class="end-arrow" style="color: red;">→</span>
+                                {% endif %}
+                            </div>
                             <div class="booking-details">
                                 <div>{{ _('Check-in') }}: {{ booking.check_in }}</div>
                                 <div>{{ _('Check-out') }}: {{ booking.check_out }}</div>
