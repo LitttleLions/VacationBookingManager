@@ -111,10 +111,16 @@ def calendar_view():
 
     try:
         # Get current date and calculate week dates
-        if start_date_filter:
+        if request.args.get('date'):
+            display_date = datetime.strptime(request.args.get('date'), '%Y-%m-%d')
+        elif start_date_filter:
             display_date = datetime.strptime(start_date_filter, '%Y-%m-%d')
         else:
-            display_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
+            display_date = datetime.now()
+
+        week_start = display_date - timedelta(days=display_date.weekday())
+        prev_week = (week_start - timedelta(weeks=1)).strftime('%Y-%m-%d')
+        next_week = (week_start + timedelta(weeks=1)).strftime('%Y-%m-%d')
 
         week_start = display_date - timedelta(days=display_date.weekday())
         prev_week = (week_start - timedelta(weeks=1)).strftime('%Y-%m-%d')

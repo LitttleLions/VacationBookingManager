@@ -196,8 +196,10 @@ nav ul li a:hover {
 }
 
 .calendar-cell {
+    position: relative;
     height: 140px;
     overflow-y: auto;
+    max-width: 200px;
 }
 
 .booking-item {
@@ -224,6 +226,9 @@ nav ul li a:hover {
     color: #000000 !important;
     font-size: 14px;
     font-weight: 600 !important;
+    max-width: 100%;
+    overflow-x: hidden;
+    word-wrap: break-word;
 }
 
 /* Tooltip styles */
