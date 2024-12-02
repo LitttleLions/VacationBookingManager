@@ -109,19 +109,23 @@ def calendar_view():
 
     logger.debug(f"Received filters - Start date: {start_date_filter}, End date: {end_date_filter}")
 
-    # Determine the date to display
-    if start_date_filter:
-        display_date = datetime.strptime(start_date_filter, '%Y-%m-%d')
-    else:
-        display_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
+    try:
+        # Get current date and calculate week dates
+        if start_date_filter:
+            display_date = datetime.strptime(start_date_filter, '%Y-%m-%d')
+        else:
+            display_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
 
-    # Ensure week_start is calculated from display_date
-    week_start = display_date - timedelta(days=display_date.weekday())
-    prev_week = (week_start - timedelta(weeks=1)).strftime('%Y-%m-%d')
-    next_week = (week_start + timedelta(weeks=1)).strftime('%Y-%m-%d')
-    logger.debug(f"Calculated week start: {week_start.strftime('%Y-%m-%d')}")
-    
-    week_dates = [week_start + timedelta(days=i) for i in range(7)]
+        week_start = display_date - timedelta(days=display_date.weekday())
+        prev_week = (week_start - timedelta(weeks=1)).strftime('%Y-%m-%d')
+        next_week = (week_start + timedelta(weeks=1)).strftime('%Y-%m-%d')
+        logger.debug(f"Calculated week start: {week_start.strftime('%Y-%m-%d')}")
+        
+        week_dates = [week_start + timedelta(days=i) for i in range(7)]
+    except ValueError as e:
+        logger.error(f"Error processing dates in calendar view: {e}")
+        flash("Invalid date format", "error")
+        return redirect(url_for('calendar_view'))
     logger.debug(f"Generated week dates from {week_dates[0].strftime('%Y-%m-%d')} to {week_dates[-1].strftime('%Y-%m-%d')}")
     
     week_number = week_start.isocalendar()[1]
