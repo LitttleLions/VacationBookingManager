@@ -20,9 +20,19 @@
     </form>
 
     <div class="calendar-navigation">
-        <a href="{{ url_for('calendar_view', date=prev_week, guest_filter=guest_filter, apartment_filter=apartment_filter, start_date_filter=start_date_filter, end_date_filter=end_date_filter) }}" class="nav-button">&lt; {{ _('Previous Week') }}</a>
+        <a href="{{ url_for('calendar_view', date=prev_week, guest_filter=guest_filter, apartment_filter=apartment_filter, start_date_filter=start_date_filter, end_date_filter=end_date_filter) }}" class="nav-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-arrow">
+                <polyline points="15 18 9 12 15 6"></polyline>
+            </svg>
+            {{ _('Previous Week') }}
+        </a>
         <input type="date" id="datePicker" value="{{ current_date.strftime('%Y-%m-%d') }}" class="date-picker">
-        <a href="{{ url_for('calendar_view', date=next_week, guest_filter=guest_filter, apartment_filter=apartment_filter, start_date_filter=start_date_filter, end_date_filter=end_date_filter) }}" class="nav-button">{{ _('Next Week') }} &gt;</a>
+        <a href="{{ url_for('calendar_view', date=next_week, guest_filter=guest_filter, apartment_filter=apartment_filter, start_date_filter=start_date_filter, end_date_filter=end_date_filter) }}" class="nav-button">
+            {{ _('Next Week') }}
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="nav-arrow">
+                <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+        </a>
     </div>
 
     <div class="calendar-week">
