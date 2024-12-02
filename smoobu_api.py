@@ -160,6 +160,8 @@ class SmoobuAPI:
         """Normalize field names to ensure consistency"""
         normalized = []
         for booking in bookings:
+            adults = int(booking.get('adults', 0) or 0)
+            children = int(booking.get('children', 0) or 0)
             normalized_booking = {
                 'check_in': booking.get('arrival'),
                 'check_out': booking.get('departure'),
@@ -171,7 +173,10 @@ class SmoobuAPI:
                 'apartment_name': booking.get('apartment', {}).get('name'),
                 'channel_name': booking.get('channel', {}).get('name', 'Direct'),
                 'phone_number': booking.get('phone', ''),
-                'guests': int(booking.get('adults', 0) or 0) + int(booking.get('children', 0) or 0),
+                'email': booking.get('email', ''),
+                'adults': adults,
+                'children': children,
+                'guests': adults + children,
                 'assistant_notice': booking.get('assistant-notice', ''),
                 'language': booking.get('language', 'en'),
                 'total_price': booking.get('price', ''),

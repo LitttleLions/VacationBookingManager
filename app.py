@@ -107,7 +107,12 @@ def calendar_view():
     start_date_filter = request.args.get('start_date_filter', '')
     end_date_filter = request.args.get('end_date_filter', '')
 
-    current_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
+    # Use start_date_filter as current_date if provided
+    if start_date_filter:
+        current_date = datetime.strptime(start_date_filter, '%Y-%m-%d')
+    else:
+        current_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
+    
     week_start = current_date - timedelta(days=current_date.weekday())
     week_dates = [week_start + timedelta(days=i) for i in range(7)]
     week_number = week_start.isocalendar()[1]
