@@ -10,6 +10,36 @@ body {
     color: #000000 !important;
 }
 
+body,
+.booking-details,
+.date-number,
+.print-table td,
+#bookingTable td,
+.calendar-table td,
+.booking-guest,
+.nav-button {
+    color: #000000 !important;
+}
+
+.spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #e67e22;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
 .container {
     width: 95%;
     margin: auto;
@@ -132,10 +162,13 @@ nav ul li a:hover {
 
 .nav-arrow {
     transition: transform 0.3s;
+    stroke-width: 3;
+    stroke: currentColor;
 }
 
 .nav-button:hover .nav-arrow {
-    transform: scale(1.1);
+    transform: scale(1.2);
+    stroke-width: 4;
 }
 
 .date-picker {

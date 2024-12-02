@@ -1,5 +1,17 @@
 document.addEventListener('DOMContentLoaded', function() {
+    const spinner = document.getElementById('loading-spinner');
     const container = document.querySelector('.container');
+    
+    // Show spinner before page load
+    window.addEventListener('beforeunload', function() {
+        spinner.style.display = 'block';
+    });
+    
+    // Hide spinner after page load
+    window.addEventListener('load', function() {
+        spinner.style.display = 'none';
+    });
+
     if (!container) {
         console.error('Container element not found');
         return;
