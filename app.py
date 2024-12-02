@@ -244,8 +244,8 @@ def fetch_and_filter_bookings(guest_filter='', apartment_filter='', start_date_f
 
     logger.debug(f"Retrieved {len(bookings)} bookings from Smoobu API")
     if bookings:
-        earliest_date = min(booking['arrival'] for booking in bookings)
-        latest_date = max(booking['departure'] for booking in bookings)
+        earliest_date = min(booking['check_in'] for booking in bookings)
+        latest_date = max(booking['check_out'] for booking in bookings)
         logger.debug(f"Date range of bookings: from {earliest_date} to {latest_date}")
         
         # Log detailed structure of first booking as example
@@ -268,17 +268,17 @@ def fetch_and_filter_bookings(guest_filter='', apartment_filter='', start_date_f
 
             # Map API fields to our application fields
             mapped_booking = {
-                'check_in': booking['arrival'],
-                'check_out': booking['departure'],
+                'check_in': booking.get('check_in') or booking.get('arrival'),
+                'check_out': booking.get('check_out') or booking.get('departure'),
                 'guest_name': guest_name,
-                'apartment_name': booking['apartment']['name'],
-                'channel_name': booking.get('channel', {}).get('name', 'Direct'),
-                'phone_number': booking.get('phone', ''),
+                'apartment_name': booking.get('apartment_name') or booking['apartment']['name'],
+                'channel_name': booking.get('channel_name') or booking.get('channel', {}).get('name', 'Direct'),
+                'phone_number': booking.get('phone_number') or booking.get('phone', ''),
                 'guests': int(booking.get('adults', 0) or 0) + int(booking.get('children', 0) or 0),
-                'assistantNotice': booking.get('assistant-notice', ''),
+                'assistantNotice': booking.get('assistantNotice') or booking.get('assistant-notice', ''),
                 'language': booking.get('language', 'en'),
-                'total_price': booking.get('price', ''),
-                'assistant_notice': booking.get('assistant-notice', '')  # For print view
+                'total_price': booking.get('total_price') or booking.get('price', ''),
+                'assistant_notice': booking.get('assistant_notice') or booking.get('assistant-notice', '')  # For print view
             }
             
             # Apply guest filter if provided
@@ -313,8 +313,9 @@ def booking_list():
         flash(error, 'error')
         filtered_bookings = []
 
+    # Get list of apartments from normalized bookings
     all_bookings, _ = smoobu_api.get_bookings()
-    apartments = sorted(set(booking['apartment']['name'] for booking in all_bookings))
+    apartments = sorted(set(booking.get('apartment_name') for booking in all_bookings if booking.get('apartment_name')))
 
     return render_template('booking_list.html', bookings=filtered_bookings,
                            guest_filter=guest_filter,
@@ -341,8 +342,9 @@ def calendar_view():
         flash(error, 'error')
         filtered_bookings = []
 
+    # Get list of apartments from normalized bookings
     all_bookings, _ = smoobu_api.get_bookings()
-    apartments = sorted(set(booking['apartment']['name'] for booking in all_bookings))
+    apartments = sorted(set(booking.get('apartment_name') for booking in all_bookings if booking.get('apartment_name')))
 
     calendar_data = {apartment: {date: [] for date in week_dates} for apartment in apartments}
 
@@ -387,8 +389,9 @@ def print_view():
         flash(error, 'error')
         filtered_bookings = []
 
+    # Get list of apartments from normalized bookings
     all_bookings, _ = smoobu_api.get_bookings()
-    apartments = sorted(set(booking['apartment']['name'] for booking in all_bookings))
+    apartments = sorted(set(booking.get('apartment_name') for booking in all_bookings if booking.get('apartment_name')))
 
     logger.debug(f"Filtered bookings for print view: {len(filtered_bookings)}")
 

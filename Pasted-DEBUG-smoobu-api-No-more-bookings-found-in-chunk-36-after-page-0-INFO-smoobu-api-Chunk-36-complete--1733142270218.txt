@@ -1,0 +1,30 @@
+DEBUG:smoobu_api:No more bookings found in chunk 36 after page 0
+INFO:smoobu_api:Chunk 36 complete. Retrieved 0 bookings
+INFO:smoobu_api:Processing chunk 37: 2033-11-21 to 2034-02-19
+DEBUG:smoobu_api:Fetching page 1 for chunk 37
+DEBUG:smoobu_api:Fetching bookings from https://login.smoobu.com/api/reservations with params: {'from': '2033-11-21', 'to': '2034-02-19', 'limit': 25, 'page': 1}
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): login.smoobu.com:443
+DEBUG:urllib3.connectionpool:https://login.smoobu.com:443 "GET /api/reservations?from=2033-11-21&to=2034-02-19&limit=25&page=1 HTTP/11" 200 77
+DEBUG:smoobu_api:Request URL: https://login.smoobu.com/api/reservations?from=2033-11-21&to=2034-02-19&limit=25&page=1
+DEBUG:smoobu_api:Request headers: {'API-Key': '9V1lV6cSqy8EbeOV1v4cXIIuIgNl41Pz', 'Content-Type': 'application/json', 'Accept': 'application/json'}
+DEBUG:smoobu_api:Response status code: 200
+DEBUG:smoobu_api:Response headers: {'date': 'Mon, 02 Dec 2024 12:23:45 GMT', 'server': 'Apache', 'x-ratelimit-remaining': '941', 'x-ratelimit-limit': '1000', 'x-ratelimit-retry-after': '1733142255', 'expires': 'Thu, 19 Nov 1981 08:52:00 GMT', 'cache-control': 'no-store, no-cache, must-revalidate', 'pragma': 'no-cache', 'x-frame-options': 'deny', 'vary': 'Accept-Encoding', 'content-encoding': 'gzip', 'access-control-allow-origin': '*', 'x-content-type-options': 'nosniff', 'strict-transport-security': 'max-age=63072000; preload', 'content-length': '77', 'content-type': 'application/json; charset=utf-8'}
+DEBUG:smoobu_api:Retrieved 0 bookings
+DEBUG:smoobu_api:No more bookings found in chunk 37 after page 0
+INFO:smoobu_api:Chunk 37 complete. Retrieved 0 bookings
+INFO:smoobu_api:Processing chunk 38: 2034-02-20 to 2034-05-21
+DEBUG:smoobu_api:Fetching page 1 for chunk 38
+DEBUG:smoobu_api:Fetching bookings from https://login.smoobu.com/api/reservations with params: {'from': '2034-02-20', 'to': '2034-05-21', 'limit': 25, 'page': 1}
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): login.smoobu.com:443
+DEBUG:urllib3.connectionpool:https://login.smoobu.com:443 "GET /api/reservations?from=2034-02-20&to=2034-05-21&limit=25&page=1 HTTP/11" 200 77
+DEBUG:smoobu_api:Request URL: https://login.smoobu.com/api/reservations?from=2034-02-20&to=2034-05-21&limit=25&page=1
+DEBUG:smoobu_api:Request headers: {'API-Key': '9V1lV6cSqy8EbeOV1v4cXIIuIgNl41Pz', 'Content-Type': 'application/json', 'Accept': 'application/json'}
+DEBUG:smoobu_api:Response status code: 200
+DEBUG:smoobu_api:Response headers: {'date': 'Mon, 02 Dec 2024 12:23:45 GMT', 'server': 'Apache', 'x-ratelimit-remaining': '940', 'x-ratelimit-limit': '1000', 'x-ratelimit-retry-after': '1733142255', 'expires': 'Thu, 19 Nov 1981 08:52:00 GMT', 'cache-control': 'no-store, no-cache, must-revalidate', 'pragma': 'no-cache', 'x-frame-options': 'deny', 'vary': 'Accept-Encoding', 'content-encoding': 'gzip', 'access-control-allow-origin': '*', 'x-content-type-options': 'nosniff', 'strict-transport-security': 'max-age=63072000; preload', 'content-length': '77', 'content-type': 'application/json; charset=utf-8'}
+DEBUG:smoobu_api:Retrieved 0 bookings
+DEBUG:smoobu_api:No more bookings found in chunk 38 after page 0
+INFO:smoobu_api:Chunk 38 complete. Retrieved 0 bookings
+INFO:smoobu_api:Processing chunk 39: 2034-05-22 to 2034-08-20
+DEBUG:smoobu_api:Fetching page 1 for chunk 39
+DEBUG:smoobu_api:Fetching bookings from https://login.smoobu.com/api/reservations with params: {'from': '2034-05-22', 'to': '2034-08-20', 'limit': 25, 'page': 1}
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): login.smoobu.com:443

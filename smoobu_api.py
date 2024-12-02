@@ -3,11 +3,14 @@ from datetime import datetime, timedelta
 import json
 import time
 import logging
+from functools import lru_cache
+from typing import Dict, List, Tuple, Optional
 
 logger = logging.getLogger(__name__)
 
 class SmoobuAPI:
     BASE_URL = 'https://login.smoobu.com/api'
+    CACHE_DURATION = 300  # 5 minutes in seconds
 
     def __init__(self, settings_channel_id, api_key):
         self.settings_channel_id = settings_channel_id
@@ -17,11 +20,37 @@ class SmoobuAPI:
             'Content-Type': 'application/json',
             'Accept': 'application/json'
         }
+        self._cache: Dict[str, Tuple[List, float]] = {}
+        self._rate_limit_remaining = 1000
+        self._rate_limit_reset = 0
+
+    def _get_cache_key(self, params: dict) -> str:
+        """Generate a cache key from the request parameters"""
+        return json.dumps(params, sort_keys=True)
+
+    def _is_cache_valid(self, cache_time: float) -> bool:
+        """Check if the cached data is still valid"""
+        return time.time() - cache_time < self.CACHE_DURATION
+
+    def _update_rate_limits(self, headers: dict):
+        """Update rate limiting information from response headers"""
+        self._rate_limit_remaining = int(headers.get('x-ratelimit-remaining', 1000))
+        self._rate_limit_reset = int(headers.get('x-ratelimit-retry-after', 0))
+        logger.debug(f"Rate limit remaining: {self._rate_limit_remaining}")
+
+    def _should_use_cache(self, cache_key: str) -> bool:
+        """Determine if cached data should be used"""
+        if cache_key in self._cache:
+            data, cache_time = self._cache[cache_key]
+            if self._is_cache_valid(cache_time):
+                logger.debug("Using cached data")
+                return True
+        return False
 
     def get_bookings(self, guest_filter='', apartment_filter='', start_date_filter='', end_date_filter='', max_retries=3, initial_delay=1):
         logger.debug("Entering get_bookings method")
         
-        # Set initial date range (current date to 10 years in the future)
+        # Set initial date range (current date to future)
         start_date = datetime.now().date()
         end_date = start_date + timedelta(days=3650)  # 10 years
 
@@ -43,8 +72,8 @@ class SmoobuAPI:
 
         logger.info(f"Requesting bookings from {start_date} to {end_date}")
 
-        # Initialize parameters with a smaller chunk size to handle API limits
-        chunk_size = timedelta(days=90)  # Fetch 90 days at a time
+        # Initialize parameters with increased chunk size (365 days)
+        chunk_size = timedelta(days=365)  # Increased from 90 to 365 days
         current_start = start_date
         all_bookings = []
         total_api_calls = 0
@@ -60,35 +89,49 @@ class SmoobuAPI:
                 'to': chunk_end.strftime('%Y-%m-%d'),
                 'limit': 25  # Set to match API's actual limit
             }
-            
-            page = 1
-            chunk_bookings = []
 
-            while True:
-                params['page'] = page
-                logger.debug(f"Fetching page {page} for chunk {chunk_number}")
-                
-                bookings, error = self._fetch_bookings(params, max_retries, initial_delay)
-                total_api_calls += 1
-                
-                if error:
-                    logger.error(f"Error fetching bookings for chunk {chunk_number}, page {page}: {error}")
-                    break
+            # Check cache before making API call
+            cache_key = self._get_cache_key(params)
+            if self._should_use_cache(cache_key):
+                chunk_bookings = self._cache[cache_key][0]
+                logger.debug(f"Using cached data for chunk {chunk_number}")
+            else:
+                page = 1
+                chunk_bookings = []
 
-                if not bookings:
-                    logger.debug(f"No more bookings found in chunk {chunk_number} after page {page-1}")
-                    break
+                while True:
+                    params['page'] = page
+                    logger.debug(f"Fetching page {page} for chunk {chunk_number}")
+                    
+                    # Check rate limits before making request
+                    if self._rate_limit_remaining < 10:
+                        wait_time = max(0, self._rate_limit_reset - time.time())
+                        logger.warning(f"Rate limit nearly exceeded. Waiting {wait_time} seconds")
+                        time.sleep(wait_time)
+                    
+                    bookings, error = self._fetch_bookings(params, max_retries, initial_delay)
+                    total_api_calls += 1
+                    
+                    if error:
+                        logger.error(f"Error fetching bookings for chunk {chunk_number}, page {page}: {error}")
+                        break
 
-                chunk_bookings.extend(bookings)
-                logger.debug(f"Retrieved {len(bookings)} bookings on page {page} for chunk {chunk_number}")
-                
-                # If we received fewer bookings than the limit, we've reached the last page
-                if len(bookings) < params['limit']:
-                    logger.debug(f"Reached last page of results for chunk {chunk_number} on page {page}")
-                    break
-                
-                page += 1
-                time.sleep(1)  # Add a small delay between requests
+                    if not bookings:
+                        logger.debug(f"No more bookings found in chunk {chunk_number} after page {page-1}")
+                        break
+
+                    chunk_bookings.extend(bookings)
+                    logger.debug(f"Retrieved {len(bookings)} bookings on page {page} for chunk {chunk_number}")
+                    
+                    if len(bookings) < params['limit']:
+                        logger.debug(f"Reached last page of results for chunk {chunk_number} on page {page}")
+                        break
+                    
+                    page += 1
+                    time.sleep(1)  # Add a small delay between requests
+
+                # Cache the chunk results
+                self._cache[cache_key] = (chunk_bookings, time.time())
 
             # Add chunk bookings to all bookings
             all_bookings.extend(chunk_bookings)
@@ -101,50 +144,77 @@ class SmoobuAPI:
         logger.info(f"Total API calls made: {total_api_calls}")
         logger.info(f"Total bookings fetched before filtering: {len(all_bookings)}")
 
-        # Log the date range of all fetched bookings
-        if all_bookings:
-            earliest_date = min(booking['arrival'] for booking in all_bookings)
-            latest_date = max(booking['departure'] for booking in all_bookings)
-            logger.info(f"Date range of all fetched bookings: from {earliest_date} to {latest_date}")
+        # Normalize field names in all bookings
+        normalized_bookings = self._normalize_booking_fields(all_bookings)
 
         # Apply filters after fetching all bookings
-        filtered_bookings = self._apply_filters(all_bookings, guest_filter, apartment_filter)
-        return filtered_bookings, None
+        try:
+            filtered_bookings = self._apply_filters(normalized_bookings, guest_filter, apartment_filter)
+            return filtered_bookings, None
+        except Exception as e:
+            error_msg = f"Error applying filters: {str(e)}"
+            logger.error(error_msg)
+            return [], error_msg
+
+    def _normalize_booking_fields(self, bookings: List[dict]) -> List[dict]:
+        """Normalize field names to ensure consistency"""
+        normalized = []
+        for booking in bookings:
+            normalized_booking = {
+                'check_in': booking.get('arrival'),
+                'check_out': booking.get('departure'),
+                'guest_name': (
+                    booking.get('guest-name') or 
+                    f"{booking.get('firstname', '').strip()} {booking.get('lastname', '').strip()}".strip() or 
+                    'Unknown Guest'
+                ),
+                'apartment_name': booking.get('apartment', {}).get('name'),
+                'channel_name': booking.get('channel', {}).get('name', 'Direct'),
+                'phone_number': booking.get('phone', ''),
+                'guests': int(booking.get('adults', 0) or 0) + int(booking.get('children', 0) or 0),
+                'assistantNotice': booking.get('assistant-notice', ''),
+                'language': booking.get('language', 'en'),
+                'total_price': booking.get('price', ''),
+                'assistant_notice': booking.get('assistant-notice', '')
+            }
+            normalized.append(normalized_booking)
+        return normalized
 
     def _apply_filters(self, bookings, guest_filter, apartment_filter):
+        """Apply filters with improved error handling and logging"""
         filtered = []
         total_bookings = len(bookings)
         logger.debug(f"Starting filtering process on {total_bookings} bookings")
 
-        for booking in bookings:
-            # Log the booking being processed
-            logger.debug(f"Processing booking: {booking.get('id', 'No ID')} - {booking.get('guest-name', 'Unknown Guest')}")
-            
-            # Apply guest filter if provided
-            if guest_filter:
-                guest_name = (
-                    booking.get('guest-name') or 
-                    f"{booking.get('firstname', '').strip()} {booking.get('lastname', '').strip()}".strip() or 
-                    'Unknown Guest'
-                ).lower()
+        try:
+            for booking in bookings:
+                # Log the booking being processed
+                logger.debug(f"Processing booking: {booking.get('guest_name', 'Unknown Guest')}")
                 
-                if guest_filter.lower() not in guest_name:
-                    logger.debug(f"Booking {booking.get('id', 'No ID')} filtered out by guest filter")
-                    continue
-                logger.debug(f"Booking {booking.get('id', 'No ID')} passed guest filter")
+                # Apply guest filter if provided
+                if guest_filter:
+                    guest_name = booking.get('guest_name', '').lower()
+                    if guest_filter.lower() not in guest_name:
+                        logger.debug(f"Booking filtered out by guest filter: {guest_name}")
+                        continue
+                    logger.debug(f"Booking passed guest filter: {guest_name}")
 
-            # Apply apartment filter if provided
-            if apartment_filter:
-                apartment_name = booking.get('apartment', {}).get('name', '').lower()
-                if apartment_filter.lower() != apartment_name:
-                    logger.debug(f"Booking {booking.get('id', 'No ID')} filtered out by apartment filter")
-                    continue
-                logger.debug(f"Booking {booking.get('id', 'No ID')} passed apartment filter")
+                # Apply apartment filter if provided
+                if apartment_filter:
+                    apartment_name = booking.get('apartment_name', '').lower()
+                    if apartment_filter.lower() != apartment_name:
+                        logger.debug(f"Booking filtered out by apartment filter: {apartment_name}")
+                        continue
+                    logger.debug(f"Booking passed apartment filter: {apartment_name}")
 
-            filtered.append(booking)
+                filtered.append(booking)
 
-        logger.info(f"Filtering complete: {len(filtered)} bookings remained from {total_bookings}")
-        return filtered
+            logger.info(f"Filtering complete: {len(filtered)} bookings remained from {total_bookings}")
+            return filtered
+
+        except Exception as e:
+            logger.error(f"Error during filtering: {str(e)}")
+            raise
 
     def _fetch_bookings(self, params, max_retries, initial_delay):
         url = f"{self.BASE_URL}/reservations"
@@ -159,6 +229,9 @@ class SmoobuAPI:
                 logger.debug(f"Request headers: {self.headers}")
                 logger.debug(f"Response status code: {response.status_code}")
                 logger.debug(f"Response headers: {response.headers}")
+
+                # Update rate limit information
+                self._update_rate_limits(response.headers)
 
                 response.raise_for_status()
                 
