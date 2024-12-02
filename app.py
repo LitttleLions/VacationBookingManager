@@ -10,7 +10,7 @@ from config import SMOOBU_SETTINGS_CHANNEL_ID, SMOOBU_API_KEY, BABEL_DEFAULT_LOC
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'your-secret-key'  # Replace with a real secret key
-app.config['BABEL_DEFAULT_LOCALE'] = BABEL_DEFAULT_LOCALE
+app.config['BABEL_DEFAULT_LOCALE'] = 'de'
 app.config['BABEL_DEFAULT_TIMEZONE'] = BABEL_DEFAULT_TIMEZONE
 
 babel = Babel(app)
@@ -33,7 +33,7 @@ def get_locale():
     # Check session
     if 'lang' in session and session['lang'] in ['en', 'de']:
         return session['lang']
-    # Default to German if no language is set
+    # Default to German
     return 'de'
 
 babel.init_app(app, locale_selector=get_locale)
