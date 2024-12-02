@@ -2,7 +2,7 @@ import os
 import json
 import logging
 from flask import session
-from flask import Flask, render_template, request, flash, g, jsonify
+from flask import Flask, render_template, request, flash, g, jsonify, current_app
 from flask_babel import Babel, gettext as _
 from datetime import datetime, timedelta, date
 from smoobu_api import SmoobuAPI
@@ -19,11 +19,16 @@ smoobu_api = SmoobuAPI(SMOOBU_SETTINGS_CHANNEL_ID, SMOOBU_API_KEY)
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
+def refresh_translations():
+    if hasattr(current_app, 'babel'):
+        current_app.babel.refresh()
+
 def get_locale():
     # Check URL parameters first
     lang = request.args.get('lang')
     if lang in ['en', 'de']:
         session['lang'] = lang
+        refresh_translations()
         return lang
     # Check session
     if 'lang' in session and session['lang'] in ['en', 'de']:
