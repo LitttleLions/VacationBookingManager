@@ -184,7 +184,7 @@ nav ul li a:hover {
 
 .date-number {
     font-size: 14px;
-    color: #333333;
+    color: #333333 !important;
 }
 
 .apartment-name {
@@ -217,7 +217,7 @@ nav ul li a:hover {
 }
 
 .booking-details {
-    color: #333;
+    color: #333333 !important;
     font-size: 14px;
     font-weight: 400;
 }
@@ -284,7 +284,7 @@ nav ul li a:hover {
 
 #bookingTable td {
     font-size: 15px;
-    color: #333333;
+    color: #333333 !important;
 }
 
 #bookingTable tr:nth-child(even) {
@@ -326,7 +326,7 @@ nav ul li a:hover {
     border: 1px solid #ddd;
     padding: 12px;
     text-align: left;
-    color: #333333;
+    color: #333333 !important;
 }
 
 .print-table th {

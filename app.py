@@ -112,13 +112,13 @@ def calendar_view():
     # Determine the date to display
     if start_date_filter:
         display_date = datetime.strptime(start_date_filter, '%Y-%m-%d')
-        logger.info(f"Using start_date_filter as display date: {display_date.strftime('%Y-%m-%d')}")
     else:
         display_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
-        logger.info(f"Using current/requested date as display date: {display_date.strftime('%Y-%m-%d')}")
 
-    # Calculate week start based on display date
+    # Ensure week_start is calculated from display_date
     week_start = display_date - timedelta(days=display_date.weekday())
+    prev_week = (week_start - timedelta(weeks=1)).strftime('%Y-%m-%d')
+    next_week = (week_start + timedelta(weeks=1)).strftime('%Y-%m-%d')
     logger.debug(f"Calculated week start: {week_start.strftime('%Y-%m-%d')}")
     
     week_dates = [week_start + timedelta(days=i) for i in range(7)]
