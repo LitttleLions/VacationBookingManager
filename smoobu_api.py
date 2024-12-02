@@ -172,10 +172,9 @@ class SmoobuAPI:
                 'channel_name': booking.get('channel', {}).get('name', 'Direct'),
                 'phone_number': booking.get('phone', ''),
                 'guests': int(booking.get('adults', 0) or 0) + int(booking.get('children', 0) or 0),
-                'assistantNotice': booking.get('assistant-notice', ''),
+                'assistant_notice': booking.get('assistant-notice', ''),
                 'language': booking.get('language', 'en'),
                 'total_price': booking.get('price', ''),
-                'assistant_notice': booking.get('assistant-notice', '')
             }
             normalized.append(normalized_booking)
         return normalized
@@ -189,12 +188,18 @@ class SmoobuAPI:
         try:
             for booking in bookings:
                 # Log the booking being processed
-                logger.debug(f"Processing booking: {booking.get('guest_name', 'Unknown Guest')}")
+                guest_name = booking.get('guest_name', 'Unknown Guest')
+                channel_name = booking.get('channel_name', '')
+                logger.debug(f"Processing booking: {guest_name} (Channel: {channel_name})")
                 
+                # Filter out Unknown Guest and Blocked channel bookings
+                if guest_name == 'Unknown Guest' or channel_name == 'Blocked channel':
+                    logger.debug(f"Filtering out booking - Guest: {guest_name}, Channel: {channel_name}")
+                    continue
+
                 # Apply guest filter if provided
                 if guest_filter:
-                    guest_name = booking.get('guest_name', '').lower()
-                    if guest_filter.lower() not in guest_name:
+                    if guest_filter.lower() not in guest_name.lower():
                         logger.debug(f"Booking filtered out by guest filter: {guest_name}")
                         continue
                     logger.debug(f"Booking passed guest filter: {guest_name}")
@@ -208,8 +213,16 @@ class SmoobuAPI:
                     logger.debug(f"Booking passed apartment filter: {apartment_name}")
 
                 filtered.append(booking)
+                logger.debug(f"Added booking to filtered list: {guest_name} in {booking.get('apartment_name')}")
 
             logger.info(f"Filtering complete: {len(filtered)} bookings remained from {total_bookings}")
+            logger.debug("Filtered bookings by apartment:")
+            apartment_counts = {}
+            for booking in filtered:
+                apt = booking.get('apartment_name')
+                apartment_counts[apt] = apartment_counts.get(apt, 0) + 1
+            for apt, count in apartment_counts.items():
+                logger.debug(f"  {apt}: {count} bookings")
             return filtered
 
         except Exception as e:
