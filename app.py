@@ -107,15 +107,25 @@ def calendar_view():
     start_date_filter = request.args.get('start_date_filter', '')
     end_date_filter = request.args.get('end_date_filter', '')
 
-    # Use start_date_filter as current_date if provided
+    logger.debug(f"Received filters - Start date: {start_date_filter}, End date: {end_date_filter}")
+
+    # Determine the date to display
     if start_date_filter:
-        current_date = datetime.strptime(start_date_filter, '%Y-%m-%d')
+        display_date = datetime.strptime(start_date_filter, '%Y-%m-%d')
+        logger.info(f"Using start_date_filter as display date: {display_date.strftime('%Y-%m-%d')}")
     else:
-        current_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
+        display_date = datetime.strptime(request.args.get('date', datetime.now().strftime('%Y-%m-%d')), '%Y-%m-%d')
+        logger.info(f"Using current/requested date as display date: {display_date.strftime('%Y-%m-%d')}")
+
+    # Calculate week start based on display date
+    week_start = display_date - timedelta(days=display_date.weekday())
+    logger.debug(f"Calculated week start: {week_start.strftime('%Y-%m-%d')}")
     
-    week_start = current_date - timedelta(days=current_date.weekday())
     week_dates = [week_start + timedelta(days=i) for i in range(7)]
+    logger.debug(f"Generated week dates from {week_dates[0].strftime('%Y-%m-%d')} to {week_dates[-1].strftime('%Y-%m-%d')}")
+    
     week_number = week_start.isocalendar()[1]
+    logger.info(f"Week number for display: {week_number}")
 
     logger.info(f"Calendar view - Week start: {week_start}, Week number: {week_number}")
 
@@ -169,7 +179,7 @@ def calendar_view():
                            calendar_data=calendar_data,
                            week_dates=week_dates,
                            week_number=week_number,
-                           current_date=current_date,
+                           current_date=display_date,
                            prev_week=prev_week,
                            next_week=next_week,
                            guest_filter=guest_filter,
