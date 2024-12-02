@@ -46,18 +46,8 @@
             <tr class="booking-item" data-booking='{{ booking|tojson|forceescape }}'>
                 <td>{{ booking.apartment_name }}</td>
                 <td>{{ booking.guest_name }}</td>
-                <td>
-                    {% if loop.first %}
-                    <span class="start-arrow" style="color: green;">←</span>
-                    {% endif %}
-                    {{ booking.check_in }}
-                </td>
-                <td>
-                    {{ booking.check_out }}
-                    {% if loop.last %}
-                    <span class="end-arrow" style="color: red;">→</span>
-                    {% endif %}
-                </td>
+                <td>{{ booking.check_in }}</td>
+                <td>{{ booking.check_out }}</td>
                 <td>{{ booking.phone_number }}</td>
                 <td>{{ booking.guests }}</td>
                 <td>{{ booking.channel_name }}</td>
