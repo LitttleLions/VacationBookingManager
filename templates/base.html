@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ request.args.get('lang', 'de') }}">
+<html lang="{{ session.get('lang', 'de') }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,8 +17,8 @@
                 <li><a href="{{ url_for('print_view') }}" {% if request.endpoint == 'print_view' %}style="color: #e67e22;"{% endif %}>{{ _('Print View') }}</a></li>
                 <li>
                     <select id="languageSelect" onchange="switchLanguage(this.value)">
-                        <option value="en" {% if session.get('lang', 'de') == 'en' %}selected{% endif %}>English</option>
-                        <option value="de" {% if session.get('lang', 'de') == 'de' %}selected{% endif %}>Deutsch</option>
+                        <option value="de" {% if not session.get('lang') or session.get('lang') == 'de' %}selected{% endif %}>Deutsch</option>
+                        <option value="en" {% if session.get('lang') == 'en' %}selected{% endif %}>English</option>
                     </select>
                 </li>
             </ul>

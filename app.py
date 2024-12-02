@@ -24,16 +24,19 @@ def refresh_translations():
         current_app.babel.refresh()
 
 def get_locale():
-    # Check URL parameters first
+    # First check URL parameters
     lang = request.args.get('lang')
     if lang in ['en', 'de']:
         session['lang'] = lang
         refresh_translations()
         return lang
-    # Check session
-    if 'lang' in session and session['lang'] in ['en', 'de']:
-        return session['lang']
-    # Default to German
+    
+    # Then check session
+    if 'lang' in session:
+        return session.get('lang')
+        
+    # Finally default to German
+    session['lang'] = 'de'
     return 'de'
 
 babel.init_app(app, locale_selector=get_locale)
