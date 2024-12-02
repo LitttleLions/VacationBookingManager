@@ -216,6 +216,7 @@ nav ul li a:hover {
 .booking-guest {
     font-weight: 700;
     margin-bottom: 5px;
+    color: #000000 !important;
 }
 
 .booking-details {

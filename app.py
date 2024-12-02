@@ -190,7 +190,8 @@ def calendar_view():
                            apartment_filter=apartment_filter,
                            start_date_filter=start_date_filter,
                            end_date_filter=end_date_filter,
-                           today=today)
+                           today=today,
+                           timedelta=timedelta)
 
 @app.route('/print')
 def print_view():
