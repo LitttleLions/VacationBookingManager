@@ -232,6 +232,24 @@ def get_locale():
 babel.init_app(app, locale_selector=get_locale)
 
 def fetch_and_filter_bookings(guest_filter='', apartment_filter='', start_date_filter='', end_date_filter=''):
+    # Validate date filters
+    try:
+        if start_date_filter:
+            datetime.strptime(start_date_filter, '%Y-%m-%d')
+        if end_date_filter:
+            datetime.strptime(end_date_filter, '%Y-%m-%d')
+        
+        if start_date_filter and end_date_filter:
+            if start_date_filter > end_date_filter:
+                logger.error("Invalid date range: start date is after end date")
+                return [], "Invalid date range: start date must be before or equal to end date"
+    except ValueError as e:
+        logger.error(f"Invalid date format: {e}")
+        return [], "Invalid date format. Please use YYYY-MM-DD format"
+
+    logger.info(f"Fetching bookings with filters - Guest: {guest_filter}, Apartment: {apartment_filter}, "
+                f"Start Date: {start_date_filter}, End Date: {end_date_filter}")
+
     bookings, error = smoobu_api.get_bookings(
         guest_filter=guest_filter,
         apartment_filter=apartment_filter,
@@ -242,11 +260,20 @@ def fetch_and_filter_bookings(guest_filter='', apartment_filter='', start_date_f
         logger.error(f"Error fetching bookings: {error}")
         return [], error
 
-    logger.debug(f"Retrieved {len(bookings)} bookings from Smoobu API")
+    logger.info(f"Retrieved {len(bookings)} bookings from Smoobu API")
     if bookings:
         earliest_date = min(booking['check_in'] for booking in bookings)
         latest_date = max(booking['check_out'] for booking in bookings)
-        logger.debug(f"Date range of bookings: from {earliest_date} to {latest_date}")
+        logger.info(f"Date range of bookings: from {earliest_date} to {latest_date}")
+        
+        # Log booking statistics
+        booking_stats = {
+            'total': len(bookings),
+            'with_guest_name': sum(1 for b in bookings if b.get('guest_name', 'Unknown Guest') != 'Unknown Guest'),
+            'with_phone': sum(1 for b in bookings if b.get('phone_number')),
+            'with_assistant_notice': sum(1 for b in bookings if b.get('assistantNotice'))
+        }
+        logger.debug(f"Booking statistics: {json.dumps(booking_stats, indent=2)}")
         
         # Log detailed structure of first booking as example
         if len(bookings) > 0:
@@ -383,17 +410,38 @@ def print_view():
     apartment_filter = request.args.get('apartment_filter', '')
     start_date_filter = request.args.get('start_date_filter', '')
     end_date_filter = request.args.get('end_date_filter', '')
+    
+    logger.info(f"Print view filters - Guest: {guest_filter}, Apartment: {apartment_filter}, "
+                f"Start Date: {start_date_filter}, End Date: {end_date_filter}")
 
     filtered_bookings, error = fetch_and_filter_bookings(guest_filter, apartment_filter, start_date_filter, end_date_filter)
     if error:
+        logger.error(f"Error in print view: {error}")
         flash(error, 'error')
         filtered_bookings = []
 
     # Get list of apartments from normalized bookings
     all_bookings, _ = smoobu_api.get_bookings()
+    if all_bookings:
+        logger.debug(f"Total bookings before apartment filtering: {len(all_bookings)}")
+        # Log sample booking data
+        if len(all_bookings) > 0:
+            logger.debug(f"Sample booking data: {json.dumps(all_bookings[0], indent=2)}")
+    
     apartments = sorted(set(booking.get('apartment_name') for booking in all_bookings if booking.get('apartment_name')))
+    logger.info(f"Available apartments: {apartments}")
 
-    logger.debug(f"Filtered bookings for print view: {len(filtered_bookings)}")
+    # Log filtered bookings details
+    logger.info(f"Total filtered bookings for print view: {len(filtered_bookings)}")
+    if filtered_bookings:
+        date_range = {
+            'earliest': min(booking['check_in'] for booking in filtered_bookings),
+            'latest': max(booking['check_out'] for booking in filtered_bookings)
+        }
+        logger.info(f"Date range of filtered bookings: {date_range}")
+        # Log first booking as sample
+        if len(filtered_bookings) > 0:
+            logger.debug(f"Sample filtered booking: {json.dumps(filtered_bookings[0], indent=2)}")
 
     return render_template('print_view_updated.html', bookings=filtered_bookings,
                            guest_filter=guest_filter,
