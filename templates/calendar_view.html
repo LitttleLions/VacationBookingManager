@@ -43,7 +43,7 @@
                     <th class="apartment-header">{{ _('Apartment') }}</th>
                     {% for date in week_dates %}
                     <th class="date-header {% if date.date() == today %}current-day{% endif %}">
-                        <div class="date-day">{{ date.strftime('%a') }}</div>
+                        <div class="date-day">{{ _(date.strftime('%a')) }}</div>
                         <div class="date-number">{{ date.strftime('%d/%m') }}</div>
                     </th>
                     {% endfor %}

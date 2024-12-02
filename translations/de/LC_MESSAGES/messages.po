@@ -84,3 +84,24 @@ msgstr "Druckansicht - Buchungen"
 
 msgid "Weekly Calendar View"
 msgstr "Wöchentliche Kalenderansicht"
+
+msgid "Mon"
+msgstr "Mo"
+
+msgid "Tue"
+msgstr "Di"
+
+msgid "Wed"
+msgstr "Mi"
+
+msgid "Thu"
+msgstr "Do"
+
+msgid "Fri"
+msgstr "Fr"
+
+msgid "Sat"
+msgstr "Sa"
+
+msgid "Sun"
+msgstr "So"
