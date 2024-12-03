@@ -12,9 +12,9 @@
         <nav>
             <div class="logo-container">
                 {% if session.get('lang') == 'en' %}
-                <img src="{{ url_for('static', filename='images/logo_en.svg') }}" alt="Vacation Manager" class="logo">
+                <img src="{{ url_for('static', filename='images/logo-eng.png') }}" alt="Vacation Manager" class="logo">
                 {% else %}
-                <img src="{{ url_for('static', filename='images/logo_de.svg') }}" alt="Ferienverwaltung" class="logo">
+                <img src="{{ url_for('static', filename='images/logo-ger.png') }}" alt="Ferienverwaltung" class="logo">
                 {% endif %}
             </div>
             <ul>
