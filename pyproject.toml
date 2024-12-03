@@ -10,4 +10,6 @@ dependencies = [
     "psycopg2-binary>=2.9.10",
     "flask-babel==4.0.0",
     "requests>=2.32.3",
+    "cairosvg>=2.7.1",
+    "pillow>=11.0.0",
 ]
