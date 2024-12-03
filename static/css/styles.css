@@ -48,6 +48,16 @@ body,
 }
 
 /* Header and Navigation styles */
+.logo-container {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    height: 40px;
+    width: auto;
+    margin-right: 20px;
+}
 header {
     background-color: #e67e22;
     color: #fff;

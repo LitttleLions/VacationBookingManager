@@ -10,7 +10,13 @@
 <body>
     <header>
         <nav>
-            <h1>Vacation Rental Bookings</h1>
+            <div class="logo-container">
+                {% if session.get('lang') == 'en' %}
+                <img src="{{ url_for('static', filename='images/logo_en.svg') }}" alt="Vacation Manager" class="logo">
+                {% else %}
+                <img src="{{ url_for('static', filename='images/logo_de.svg') }}" alt="Ferienverwaltung" class="logo">
+                {% endif %}
+            </div>
             <ul>
                 <li><a href="{{ url_for('booking_list') }}" {% if request.endpoint == 'booking_list' %}style="color: #e67e22;"{% endif %}>{{ _('Booking List') }}</a></li>
                 <li><a href="{{ url_for('calendar_view') }}" {% if request.endpoint == 'calendar_view' %}style="color: #e67e22;"{% endif %}>{{ _('Calendar View') }}</a></li>
