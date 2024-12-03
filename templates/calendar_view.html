@@ -87,15 +87,20 @@
                                 {% endif %}
                             </div>
                             <div class="booking-details">
-                                <div>{{ _('Check-in') }}: {{ booking.check_in }}</div>
-                                <div>{{ _('Check-out') }}: {{ booking.check_out }}</div>
-                                <div>{{ _('Adults') }}: {{ booking.adults }}</div>
-                                <div>{{ _('Children') }}: {{ booking.children }}</div>
-                                <div>{{ _('Total Guests') }}: {{ booking.guests }}</div>
-                                <div>{{ _('Email') }}: {{ booking.email }}</div>
-                                <div>{{ _('Phone') }}: {{ booking.phone_number }}</div>
-                                {% if booking.assistant_notice %}
-                                <div>{{ _('Assistant Notice') }}: {{ booking.assistant_notice }}</div>
+                                {% if booking.check_in == date.strftime('%Y-%m-%d') or booking.check_out == (date + timedelta(days=1)).strftime('%Y-%m-%d') %}
+                                    {# Show complete details for first and last day #}
+                                    <div>{{ _('Check-in') }}: {{ booking.check_in }}</div>
+                                    <div>{{ _('Check-out') }}: {{ booking.check_out }}</div>
+                                    <div>{{ _('Adults') }}: {{ booking.adults }}</div>
+                                    <div>{{ _('Children') }}: {{ booking.children }}</div>
+                                    <div>{{ _('Total Guests') }}: {{ booking.guests }}</div>
+                                    <div>{{ _('Phone') }}: {{ booking.phone_number }}</div>
+                                    {% if booking.assistant_notice %}
+                                    <div>{{ _('Assistant Notice') }}: {{ booking.assistant_notice }}</div>
+                                    {% endif %}
+                                {% else %}
+                                    {# Show simplified info for intermediate days #}
+                                    <div>{{ _('Total Guests') }}: {{ booking.guests }}</div>
                                 {% endif %}
                             </div>
                         </div>

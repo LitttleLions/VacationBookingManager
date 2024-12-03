@@ -93,10 +93,17 @@ def fetch_and_filter_bookings(guest_filter='', apartment_filter='', start_date_f
 @app.route('/')
 def booking_list():
     logger.debug("Entering booking_list function")
-    guest_filter = request.args.get('guest_filter', '')
-    apartment_filter = request.args.get('apartment_filter', '')
-    start_date_filter = request.args.get('start_date_filter', '')
-    end_date_filter = request.args.get('end_date_filter', '')
+    # Get filters from request args or session
+    guest_filter = request.args.get('guest_filter', session.get('guest_filter', ''))
+    apartment_filter = request.args.get('apartment_filter', session.get('apartment_filter', ''))
+    start_date_filter = request.args.get('start_date_filter', session.get('start_date_filter', ''))
+    end_date_filter = request.args.get('end_date_filter', session.get('end_date_filter', ''))
+    
+    # Store current filter values in session
+    session['guest_filter'] = guest_filter
+    session['apartment_filter'] = apartment_filter
+    session['start_date_filter'] = start_date_filter
+    session['end_date_filter'] = end_date_filter
 
     logger.debug(f"Filters applied - Guest: {guest_filter}, Apartment: {apartment_filter}, "
                 f"Start Date: {start_date_filter}, End Date: {end_date_filter}")
@@ -120,10 +127,17 @@ def booking_list():
 @app.route('/calendar')
 def calendar_view():
     logger.debug("Entering calendar_view function")
-    guest_filter = request.args.get('guest_filter', '')
-    apartment_filter = request.args.get('apartment_filter', '')
-    start_date_filter = request.args.get('start_date_filter', '')
-    end_date_filter = request.args.get('end_date_filter', '')
+    # Get filters from request args or session
+    guest_filter = request.args.get('guest_filter', session.get('guest_filter', ''))
+    apartment_filter = request.args.get('apartment_filter', session.get('apartment_filter', ''))
+    start_date_filter = request.args.get('start_date_filter', session.get('start_date_filter', ''))
+    end_date_filter = request.args.get('end_date_filter', session.get('end_date_filter', ''))
+    
+    # Store current filter values in session
+    session['guest_filter'] = guest_filter
+    session['apartment_filter'] = apartment_filter
+    session['start_date_filter'] = start_date_filter
+    session['end_date_filter'] = end_date_filter
 
     logger.debug(f"Received filters - Start date: {start_date_filter}, End date: {end_date_filter}")
 
@@ -220,10 +234,17 @@ def calendar_view():
 @app.route('/print')
 def print_view():
     logger.debug("Entering print_view function")
-    guest_filter = request.args.get('guest_filter', '')
-    apartment_filter = request.args.get('apartment_filter', '')
-    start_date_filter = request.args.get('start_date_filter', '')
-    end_date_filter = request.args.get('end_date_filter', '')
+    # Get filters from request args or session
+    guest_filter = request.args.get('guest_filter', session.get('guest_filter', ''))
+    apartment_filter = request.args.get('apartment_filter', session.get('apartment_filter', ''))
+    start_date_filter = request.args.get('start_date_filter', session.get('start_date_filter', ''))
+    end_date_filter = request.args.get('end_date_filter', session.get('end_date_filter', ''))
+    
+    # Store current filter values in session
+    session['guest_filter'] = guest_filter
+    session['apartment_filter'] = apartment_filter
+    session['start_date_filter'] = start_date_filter
+    session['end_date_filter'] = end_date_filter
     
     logger.info(f"Print view filters - Guest: {guest_filter}, Apartment: {apartment_filter}, "
                 f"Start Date: {start_date_filter}, End Date: {end_date_filter}")
